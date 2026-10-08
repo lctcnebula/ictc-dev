@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LCTC Foundation — Coming Soon</title>
+  <meta name="description" content="The Lake County Tech Campus Foundation website is under construction.">
+  <meta name="theme-color" content="#ffffff">
+
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/icon-512.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --blue: #015998;
+      --ink: #0f1d2b;
+      --muted: #7a8494;
+      --line: #e6e9ee;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      min-height: 100svh;
+      display: grid;
+      grid-template-rows: 1fr auto;
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      color: var(--ink);
+      background: #fff;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 48px 24px;
+    }
+
+    .logo {
+      width: min(440px, 82vw);
+      height: auto;
+      margin-bottom: clamp(40px, 8vh, 72px);
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: .7rem;
+      font-weight: 600;
+      letter-spacing: .3em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 20px;
+    }
+    .status::before {
+      content: "";
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--blue);
+      animation: blink 2s ease-in-out infinite;
+    }
+    @keyframes blink { 50% { opacity: .2; } }
+
+    h1 {
+      font-weight: 300;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      line-height: 1.15;
+      letter-spacing: -.035em;
+      margin-bottom: 20px;
+    }
+    h1 em { font-style: italic; font-weight: 500; color: var(--blue); }
+
+    p {
+      max-width: 420px;
+      font-size: .95rem;
+      line-height: 1.8;
+      color: var(--muted);
+      text-wrap: balance;
+    }
+
+    .contact {
+      margin-top: 36px;
+      font-size: .9rem;
+      font-weight: 500;
+      color: var(--blue);
+      text-decoration: none;
+      padding-bottom: 4px;
+      border-bottom: 1px solid currentColor;
+      transition: opacity .3s;
+    }
+    .contact:hover { opacity: .6; }
+
+    footer {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 24px;
+      justify-content: space-between;
+      padding: 22px clamp(24px, 5vw, 56px);
+      border-top: 1px solid var(--line);
+      font-size: .72rem;
+      letter-spacing: .04em;
+      color: var(--muted);
+    }
+    footer a { color: inherit; text-decoration: none; }
+    footer a:hover { color: var(--blue); }
+
+    @media (max-width: 560px) {
+      footer { justify-content: center; text-align: center; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .status::before { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <img class="logo" src="assets/logo.png" alt="Lake County Tech Campus Foundation" width="1781" height="483">
+
+    <span class="status">Under construction</span>
+
+    <h1>Something new is <em>coming soon.</em></h1>
+
+    <p>Our website is being built. In the meantime, we'd love to hear from you.</p>
+
+    <a class="contact" href="mailto:edelrio@techcampus.org">edelrio@techcampus.org</a>
+  </main>
+
+  <footer>
+    <span>19525 West Washington St., Grayslake, IL 60030</span>
+    <a href="https://www.techcampus.org" target="_blank" rel="noopener">techcampus.org</a>
+  </footer>
+</body>
+</html>
