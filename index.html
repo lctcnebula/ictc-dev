@@ -3,140 +3,1158 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LCTC Foundation — Coming Soon</title>
-  <meta name="description" content="The Lake County Tech Campus Foundation website is under construction.">
-  <meta name="theme-color" content="#ffffff">
+  <title>LCTC Foundation</title>
+  <meta name="description" content="The Lake County Tech Campus Foundation supports career and technical education students in Lake County, Illinois. Skills, success, future.">
+  <meta name="theme-color" content="#015998">
 
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
   <link rel="icon" type="image/png" sizes="512x512" href="assets/icon-512.png">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="preload" as="image" href="assets/img/welding.jpg">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@1,600;1,800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root {
       --blue: #015998;
+      --blue-deep: #013f6c;
+      --blue-night: #0a2540;
+      --blue-wash: #eaf2f9;
+      --steel: #a7aab0;
       --ink: #0f1d2b;
-      --muted: #7a8494;
-      --line: #e6e9ee;
+      --muted: #5f6b7a;
+      --line: #e3e7ed;
+      --paper: #ffffff;
+      --mist: #f4f7fa;
+      --display: "Barlow Condensed", "Arial Narrow", Impact, sans-serif;
+      --body: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+      --wrap: 1200px;
+      --radius: 16px;
+      --ease: cubic-bezier(.2, .7, .2, 1);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; }
+    html { scroll-behavior: smooth; scroll-padding-top: 90px; }
     body {
-      min-height: 100svh;
-      display: grid;
-      grid-template-rows: 1fr auto;
-      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
-      color: var(--ink);
-      background: #fff;
-      -webkit-font-smoothing: antialiased;
+      font-family: var(--body); color: var(--ink); background: var(--paper);
+      line-height: 1.65; -webkit-font-smoothing: antialiased;
     }
+    img { max-width: 100%; height: auto; display: block; }
+    a { color: inherit; }
+    button { font: inherit; }
+    a:focus-visible, button:focus-visible { outline: 3px solid #5fa8e0; outline-offset: 3px; border-radius: 4px; }
+    .wrap { max-width: var(--wrap); margin: 0 auto; padding-inline: clamp(16px, 4vw, 40px); }
 
-    main {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 48px 24px;
-    }
+    .skip { position: absolute; left: -9999px; top: 8px; background: var(--blue); color: #fff; padding: 8px 14px; border-radius: 6px; z-index: 100; }
+    .skip:focus { left: 8px; }
 
-    .logo {
-      width: min(440px, 82vw);
-      height: auto;
-      margin-bottom: clamp(40px, 8vh, 72px);
+    /* ---------- Header ---------- */
+    header.site {
+      position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,.95);
+      backdrop-filter: saturate(1.4) blur(12px); border-bottom: 1px solid transparent;
+      transition: border-color .3s, box-shadow .3s;
     }
+    header.site.scrolled { border-bottom-color: var(--line); box-shadow: 0 6px 24px -18px rgba(10,37,64,.5); }
+    .bar { display: flex; align-items: center; gap: 32px; height: 86px; }
+    .brand img { width: clamp(170px, 18vw, 224px); height: auto; }
+    nav.main { margin-left: auto; }
+    nav.main ul { list-style: none; display: flex; gap: 30px; }
+    nav.main a {
+      position: relative; text-decoration: none; font-size: .78rem; font-weight: 500;
+      letter-spacing: .14em; text-transform: uppercase; color: var(--ink); padding-block: 8px;
+    }
+    nav.main a::after {
+      content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--blue);
+      transform: scaleX(0); transform-origin: left; transition: transform .3s var(--ease);
+    }
+    nav.main a:hover { color: var(--blue); }
+    nav.main a:hover::after, nav.main a.on::after { transform: scaleX(1); }
+    .celebrate {
+      font-size: .78rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
+      color: var(--blue); background: transparent; border: 1.5px solid var(--blue);
+      padding: 12px 20px; border-radius: 4px; cursor: pointer; white-space: nowrap;
+      transition: background .2s, color .2s;
+    }
+    .celebrate:hover { background: var(--blue); color: #fff; }
+    .menu-toggle { display: none; margin-left: auto; background: none; border: 0; cursor: pointer; padding: 10px; }
+    .menu-toggle span { display: block; width: 24px; height: 2px; background: var(--ink); margin: 5px 0; transition: transform .25s, opacity .25s; }
+    .menu-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .menu-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+    .menu-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-    .status {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      font-size: .7rem;
-      font-weight: 600;
-      letter-spacing: .3em;
-      text-transform: uppercase;
-      color: var(--blue);
-      margin-bottom: 20px;
+    /* ---------- Hero slideshow ---------- */
+    .hero { position: relative; height: clamp(560px, 82vh, 780px); overflow: hidden; color: #fff; background: var(--blue-night); }
+    .slide { position: absolute; inset: 0; opacity: 0; transition: opacity 1.2s ease; }
+    .slide.active { opacity: 1; }
+    .slide img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.08); transition: transform 7s linear; }
+    .slide.active img { transform: scale(1); }
+    .hero::before {
+      content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+      background:
+        linear-gradient(90deg, rgba(10,37,64,.92) 0%, rgba(1,63,108,.72) 42%, rgba(1,63,108,.15) 100%),
+        linear-gradient(0deg, rgba(10,37,64,.55) 0%, transparent 40%);
     }
-    .status::before {
-      content: "";
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--blue);
-      animation: blink 2s ease-in-out infinite;
+    .hero-copy { position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; justify-content: center; }
+    .eyebrow { font-size: .72rem; font-weight: 600; letter-spacing: .3em; text-transform: uppercase; opacity: .85; margin-bottom: 22px; display: flex; align-items: center; gap: 14px; }
+    .eyebrow::before { content: ""; width: 34px; height: 2px; background: #fff; opacity: .7; }
+    .hero h1 {
+      font-family: var(--display); font-style: italic; font-weight: 800; text-transform: uppercase;
+      font-size: clamp(3rem, 8vw, 6.4rem); line-height: .92; max-width: 12ch; text-wrap: balance;
+      text-shadow: 0 4px 30px rgba(0,0,0,.25);
     }
-    @keyframes blink { 50% { opacity: .2; } }
+    .hero p.lede { margin-top: 24px; max-width: 50ch; font-size: clamp(1rem, 1.4vw, 1.15rem); font-weight: 300; opacity: .95; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 34px; }
+    .slide-ui {
+      position: absolute; z-index: 3; left: 0; right: 0; bottom: 86px;
+    }
+    .slide-ui .wrap { display: flex; align-items: center; gap: 18px; }
+    .caption { font-size: .74rem; letter-spacing: .2em; text-transform: uppercase; opacity: .85; margin-right: auto; min-height: 1.2em; }
+    .caption b { font-weight: 600; }
+    .dots { display: flex; gap: 8px; }
+    .dot { width: 30px; height: 4px; border: 0; border-radius: 4px; background: rgba(255,255,255,.35); cursor: pointer; padding: 0; overflow: hidden; position: relative; }
+    .dot::after { content: ""; position: absolute; inset: 0; background: #fff; transform: scaleX(0); transform-origin: left; }
+    .dot.active::after { animation: fill var(--dur, 6s) linear forwards; }
+    .hero.paused .dot.active::after { animation-play-state: paused; }
+    @keyframes fill { to { transform: scaleX(1); } }
+    .arrow {
+      width: 42px; height: 42px; border-radius: 50%; border: 1px solid rgba(255,255,255,.45);
+      background: rgba(10,37,64,.25); color: #fff; cursor: pointer; display: grid; place-items: center;
+      transition: background .2s;
+    }
+    .arrow:hover { background: rgba(255,255,255,.18); }
+    .arrow svg { width: 18px; height: 18px; }
 
-    h1 {
-      font-weight: 300;
-      font-size: clamp(2rem, 5vw, 3.2rem);
-      line-height: 1.15;
-      letter-spacing: -.035em;
-      margin-bottom: 20px;
+    .btn {
+      display: inline-flex; align-items: center; gap: 10px; text-decoration: none;
+      font-size: .8rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+      padding: 15px 24px; border-radius: 4px; border: 1.5px solid transparent; cursor: pointer;
+      transition: transform .2s var(--ease), background .2s, color .2s, box-shadow .2s;
     }
-    h1 em { font-style: italic; font-weight: 500; color: var(--blue); }
+    .btn:hover { transform: translateY(-2px); }
+    .btn.solid { background: #fff; color: var(--blue); }
+    .btn.solid:hover { box-shadow: 0 10px 24px -10px rgba(0,0,0,.4); }
+    .btn.ghost { border-color: rgba(255,255,255,.65); color: #fff; background: transparent; }
+    .btn.ghost:hover { background: rgba(255,255,255,.12); }
+    .btn.blue { background: var(--blue); color: #fff; }
+    .btn.blue:hover { background: var(--blue-deep); }
 
-    p {
-      max-width: 420px;
-      font-size: .95rem;
-      line-height: 1.8;
-      color: var(--muted);
-      text-wrap: balance;
+    /* ---------- Stat strip ---------- */
+    .stat-strip { position: relative; z-index: 4; margin-top: -54px; }
+    .stats {
+      display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); background: #fff; border-radius: var(--radius);
+      box-shadow: 0 24px 60px -30px rgba(10,37,64,.45); border: 1px solid var(--line); overflow: hidden;
     }
+    .stat { padding: 28px 28px 26px; }
+    .stat + .stat { border-left: 1px solid var(--line); }
+    .stat b { display: block; font: italic 800 clamp(2.3rem, 4vw, 3.2rem)/1 var(--display); color: var(--blue); font-variant-numeric: tabular-nums; }
+    .stat span { display: block; margin-top: 8px; font-size: .84rem; color: var(--muted); }
 
-    .contact {
-      margin-top: 36px;
-      font-size: .9rem;
-      font-weight: 500;
-      color: var(--blue);
-      text-decoration: none;
-      padding-bottom: 4px;
-      border-bottom: 1px solid currentColor;
-      transition: opacity .3s;
+    /* ---------- Sections ---------- */
+    section.block { padding-block: clamp(80px, 10vw, 128px); }
+    section.block.tint { background: var(--mist); }
+    .intro { text-align: center; padding-block: clamp(80px, 9vw, 116px) 0; }
+    .intro h2 { max-width: 20ch; margin: 0 auto; }
+    .intro p { max-width: 60ch; margin: 22px auto 0; color: var(--muted); font-size: 1.05rem; }
+
+    .head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 48px; }
+    .head > div { max-width: 640px; }
+    .kicker { font-size: .72rem; font-weight: 600; letter-spacing: .28em; text-transform: uppercase; color: var(--blue); margin-bottom: 14px; display: flex; align-items: center; gap: 12px; }
+    .kicker::before { content: ""; width: 28px; height: 2px; background: currentColor; }
+    h2 {
+      font-family: var(--display); font-style: italic; font-weight: 800; text-transform: uppercase;
+      font-size: clamp(2.3rem, 4.8vw, 3.6rem); line-height: .98; letter-spacing: .01em; text-wrap: balance;
     }
-    .contact:hover { opacity: .6; }
+    .head p { margin-top: 16px; color: var(--muted); font-size: 1.02rem; }
+    .text-link { font-size: .78rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--blue); text-decoration: none; white-space: nowrap; }
+    .text-link:hover { text-decoration: underline; text-underline-offset: 4px; }
 
-    footer {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px 24px;
-      justify-content: space-between;
-      padding: 22px clamp(24px, 5vw, 56px);
-      border-top: 1px solid var(--line);
-      font-size: .72rem;
-      letter-spacing: .04em;
-      color: var(--muted);
+    /* ---------- Cards ---------- */
+    .grid { display: grid; gap: 24px; }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .card {
+      background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden;
+      display: flex; flex-direction: column; min-width: 0;
+      transition: transform .35s var(--ease), box-shadow .35s var(--ease), border-color .35s;
     }
-    footer a { color: inherit; text-decoration: none; }
-    footer a:hover { color: var(--blue); }
+    .card:hover { transform: translateY(-6px); box-shadow: 0 26px 50px -28px rgba(1,63,108,.5); border-color: #cfdbe8; }
+    .card .media { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: var(--blue-wash); }
+    .card .media img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--ease); }
+    .card:hover .media img { transform: scale(1.06); }
+    .card .badge {
+      position: absolute; left: 16px; top: 16px; background: rgba(255,255,255,.94); color: var(--blue);
+      font-size: .66rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; padding: 6px 11px; border-radius: 99px;
+    }
+    .card .content { padding: 24px 26px 26px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+    .card h3 { font-size: 1.2rem; font-weight: 700; line-height: 1.3; }
+    .card p { color: var(--muted); font-size: .93rem; }
+    .card .more {
+      margin-top: auto; padding-top: 12px; font-size: .76rem; font-weight: 600; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--blue); text-decoration: none; display: inline-flex; gap: 8px; align-items: center;
+      background: none; border: 0; cursor: pointer; align-self: flex-start;
+    }
+    .card .more::after { content: "→"; transition: transform .25s var(--ease); }
+    .card:hover .more::after { transform: translateX(5px); }
+    .grid.four .card .media { aspect-ratio: 1 / 1; }
+    .grid.four .card .content { padding: 20px 22px 22px; }
+    .grid.four .card h3 { font-size: 1.08rem; }
 
-    @media (max-width: 560px) {
-      footer { justify-content: center; text-align: center; }
+    /* ---------- Photo quote band ---------- */
+    .photo-band { position: relative; color: #fff; overflow: hidden; background: var(--blue-night); }
+    .photo-band img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .55; }
+    .photo-band::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(120deg, rgba(10,37,64,.9), rgba(1,89,152,.55)); }
+    .photo-band .wrap { position: relative; z-index: 2; padding-block: clamp(96px, 13vw, 168px); text-align: center; }
+    .photo-band blockquote { font: italic 600 clamp(2rem, 4.4vw, 3.4rem)/1.08 var(--display); max-width: 22ch; margin: 0 auto; text-wrap: balance; text-transform: uppercase; }
+    .photo-band blockquote::before { content: "“"; display: block; font-size: 5rem; line-height: .5; opacity: .5; margin-bottom: 26px; }
+    .photo-band cite { display: block; margin-top: 24px; font-style: normal; font-size: .76rem; letter-spacing: .22em; text-transform: uppercase; opacity: .8; }
+
+    /* ---------- Pathways ---------- */
+    .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .chip {
+      font-size: .82rem; font-weight: 500; padding: 9px 17px; border-radius: 99px; cursor: pointer;
+      border: 1px solid var(--line); background: var(--paper); color: var(--ink); transition: all .2s;
+    }
+    .chip:hover { border-color: var(--blue); color: var(--blue); }
+    .chip[aria-pressed="true"] { background: var(--blue); border-color: var(--blue); color: #fff; }
+    .paths { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
+    .path {
+      background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 18px 18px 16px;
+      display: flex; gap: 14px; align-items: flex-start; min-width: 0;
+      transition: border-color .2s, transform .25s var(--ease), box-shadow .25s;
+      animation: pop .4s var(--ease) both;
+    }
+    .path:hover { border-color: var(--blue); transform: translateY(-3px); box-shadow: 0 14px 30px -22px rgba(1,63,108,.6); }
+    .path i { flex: none; width: 34px; height: 34px; border-radius: 9px; background: var(--blue-wash); color: var(--blue); display: grid; place-items: center; font-style: normal; font-size: 1rem; }
+    .path div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .path small { font-size: .64rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--steel); }
+    .path span { font-weight: 600; font-size: .93rem; line-height: 1.35; }
+    @keyframes pop { from { opacity: 0; transform: translateY(8px); } }
+
+    /* ---------- Events ---------- */
+    .event .media { aspect-ratio: 16 / 10; }
+    .date {
+      position: absolute; left: 16px; bottom: -26px; width: 70px; text-align: center; border-radius: 12px; overflow: hidden;
+      background: #fff; box-shadow: 0 12px 26px -12px rgba(10,37,64,.5); z-index: 1;
+    }
+    .event .media { overflow: visible; }
+    .event .media .clip { position: absolute; inset: 0; overflow: hidden; }
+    .date .m { display: block; background: var(--blue); color: #fff; font-size: .66rem; font-weight: 700; letter-spacing: .2em; padding: 5px 0; }
+    .date .d { display: block; font: italic 800 2.1rem/1.15 var(--display); padding-top: 2px; }
+    .date .w { display: block; font-size: .66rem; color: var(--muted); padding-bottom: 7px; }
+    .event .content { padding-top: 40px; }
+    .event .time { font-size: .8rem; color: var(--blue); font-weight: 600; letter-spacing: .04em; }
+
+    /* ---------- CTA ---------- */
+    .cta {
+      position: relative; overflow: hidden; border-radius: 24px; color: #fff;
+      background: linear-gradient(135deg, var(--blue), var(--blue-deep));
+      padding: clamp(40px, 6vw, 76px); display: grid; grid-template-columns: minmax(0, 1.3fr) auto; gap: 32px; align-items: center;
+    }
+    .cta::before, .cta::after { content: ""; position: absolute; border-radius: 50%; border: 40px solid rgba(255,255,255,.06); pointer-events: none; }
+    .cta::before { width: 380px; height: 380px; right: -120px; top: -160px; }
+    .cta::after { width: 240px; height: 240px; right: 160px; bottom: -170px; }
+    .cta > * { position: relative; z-index: 1; }
+    .cta p { margin-top: 14px; opacity: .9; max-width: 52ch; }
+    .cta .btn { font-size: .86rem; padding: 18px 28px; }
+
+    /* ---------- Who we are ---------- */
+    .split { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: clamp(36px, 6vw, 84px); align-items: center; }
+    .split .copy p { color: var(--muted); margin-top: 16px; }
+    .split .copy p strong { color: var(--ink); }
+    .stack { position: relative; min-width: 0; }
+    .stack .big { border-radius: var(--radius); overflow: hidden; aspect-ratio: 4 / 3; }
+    .stack .big img { width: 100%; height: 100%; object-fit: cover; }
+    .contact-card {
+      position: relative; margin: -70px 24px 0 auto; max-width: 360px; background: #fff; border-radius: var(--radius);
+      box-shadow: 0 24px 50px -24px rgba(10,37,64,.45); padding: 26px 28px; display: grid; gap: 16px;
+    }
+    .contact-card:target { animation: ping 1.6s var(--ease) .5s; }
+    @keyframes ping { 0%, 100% { box-shadow: 0 24px 50px -24px rgba(10,37,64,.45); } 30% { box-shadow: 0 0 0 6px rgba(1,89,152,.35), 0 24px 50px -24px rgba(10,37,64,.45); } }
+    .contact-card dt { font-size: .66rem; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
+    .contact-card dd { font-weight: 600; overflow-wrap: anywhere; }
+    .contact-card a { color: var(--blue); text-decoration: none; }
+    .contact-card a:hover { text-decoration: underline; }
+    .copy-btn { margin-left: 8px; font-size: .7rem; font-weight: 500; color: var(--muted); background: var(--mist); border: 1px solid var(--line); border-radius: 4px; padding: 2px 8px; cursor: pointer; }
+    .copy-btn:hover { color: var(--blue); border-color: var(--blue); }
+
+    /* ---------- Footer ---------- */
+    footer.site { background: var(--blue-night); color: rgba(255,255,255,.72); padding-block: 64px 32px; font-size: .88rem; }
+    .foot { display: grid; grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(0, 1fr)); gap: 40px; }
+    .foot .logo-chip { background: #fff; border-radius: 12px; padding: 14px 18px; display: inline-block; margin-bottom: 18px; }
+    .foot .logo-chip img { width: 210px; height: auto; }
+    .foot h4 { color: #fff; font-size: .7rem; letter-spacing: .22em; text-transform: uppercase; margin-bottom: 14px; }
+    .foot ul { list-style: none; display: grid; gap: 8px; }
+    .foot a { text-decoration: none; }
+    .foot a:hover { color: #fff; }
+    .credits { margin-top: 40px; font-size: .74rem; color: rgba(255,255,255,.5); }
+    .credits summary { cursor: pointer; width: fit-content; }
+    .credits summary:hover { color: #fff; }
+    .credits ul { list-style: none; margin-top: 12px; display: grid; gap: 4px; }
+    .credits a { text-decoration: underline; text-underline-offset: 2px; }
+    .fine { margin-top: 28px; padding-top: 22px; border-top: 1px solid rgba(255,255,255,.12); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; font-size: .76rem; }
+
+    /* ---------- Donate button ---------- */
+    .celebrate.donate { background: var(--blue); color: #fff; display: inline-flex; align-items: center; gap: 8px; }
+    .celebrate.donate:hover { background: var(--blue-deep); border-color: var(--blue-deep); }
+    .celebrate.donate svg { width: 15px; height: 15px; }
+
+    /* ---------- Donation dialog ---------- */
+    dialog.donate-modal {
+      width: min(560px, calc(100% - 32px)); max-height: calc(100dvh - 32px); margin: auto; padding: 0; border: 0;
+      border-radius: 22px; background: #fff; color: var(--ink); overflow: hidden;
+      box-shadow: 0 40px 100px -30px rgba(10,37,64,.6);
+    }
+    dialog.donate-modal[open] { display: flex; flex-direction: column; animation: rise .45s var(--ease); }
+    dialog.donate-modal::backdrop { background: rgba(10,37,64,.55); backdrop-filter: blur(4px); animation: fade .3s ease; }
+    @keyframes rise { from { opacity: 0; transform: translateY(24px) scale(.98); } }
+    @keyframes fade { from { opacity: 0; } }
+    .dm-confetti { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 5; }
+    .dm-head { display: flex; align-items: center; gap: 14px; padding: 22px 26px 18px; border-bottom: 1px solid var(--line); }
+    .dm-head img { width: 132px; }
+    .dm-head .x { margin-left: auto; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line); background: #fff; cursor: pointer; display: grid; place-items: center; color: var(--muted); }
+    .dm-head .x:hover { color: var(--ink); border-color: var(--ink); }
+    .dm-head .x svg { width: 16px; height: 16px; }
+    .dm-body { padding: 22px 26px 26px; overflow-y: auto; }
+    .demo-note { display: flex; gap: 10px; align-items: flex-start; background: #fff8e6; border: 1px solid #f2dca4; color: #6b4e00; border-radius: 12px; padding: 11px 14px; font-size: .8rem; line-height: 1.5; margin-bottom: 20px; }
+    .demo-note b { font-weight: 700; }
+    .demo-note code { font: 600 .78rem ui-monospace, Menlo, monospace; background: #fff; border: 1px solid #f2dca4; border-radius: 5px; padding: 1px 6px; white-space: nowrap; cursor: pointer; }
+    .steps { display: flex; gap: 8px; margin-bottom: 22px; list-style: none; }
+    .steps li { flex: 1; height: 4px; border-radius: 4px; background: var(--line); transition: background .4s; }
+    .steps li.on { background: var(--blue); }
+    .dm-title { font: italic 800 2rem/1 var(--display); text-transform: uppercase; margin-bottom: 6px; }
+    .dm-sub { color: var(--muted); font-size: .9rem; margin-bottom: 22px; }
+    .seg { display: grid; grid-template-columns: 1fr 1fr; background: var(--mist); border-radius: 12px; padding: 4px; margin-bottom: 18px; }
+    .seg button { border: 0; background: transparent; padding: 11px; border-radius: 9px; font-weight: 600; font-size: .88rem; cursor: pointer; color: var(--muted); transition: all .2s; }
+    .seg button[aria-pressed="true"] { background: #fff; color: var(--blue); box-shadow: 0 4px 14px -8px rgba(10,37,64,.45); }
+    .amounts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 10px; }
+    .amt { border: 1.5px solid var(--line); background: #fff; border-radius: 12px; padding: 14px 8px; cursor: pointer; font: italic 800 1.6rem/1 var(--display); color: var(--ink); transition: all .2s; }
+    .amt:hover { border-color: var(--blue); }
+    .amt[aria-pressed="true"] { border-color: var(--blue); background: var(--blue-wash); color: var(--blue); }
+    .custom { position: relative; }
+    .custom span { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font: italic 800 1.4rem var(--display); color: var(--muted); }
+    .custom input { padding-left: 32px !important; font-weight: 600; }
+    .field { display: grid; gap: 6px; margin-bottom: 14px; min-width: 0; }
+    .field label, .field .lbl { font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+    .field input, .field select {
+      width: 100%; font: 500 1rem var(--body); color: var(--ink); background: #fff; border: 1.5px solid var(--line);
+      border-radius: 10px; padding: 12px 14px; transition: border-color .2s, box-shadow .2s; appearance: none;
+    }
+    .field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235f6b7a' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 18px; padding-right: 40px; }
+    .field input:focus, .field select:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 4px rgba(1,89,152,.12); }
+    .field input[aria-invalid="true"] { border-color: #c53b3b; }
+    .field input[aria-invalid="true"]:focus { box-shadow: 0 0 0 4px rgba(197,59,59,.12); }
+    .err { color: #b42f2f; font-size: .78rem; min-height: 0; }
+    .err:empty { display: none; }
+    .row2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .row3 { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 12px; }
+    .cardbox { border: 1.5px solid var(--line); border-radius: 12px; padding: 14px 14px 2px; margin-bottom: 14px; background: var(--mist); }
+    .cardbox .field input { background: #fff; }
+    .cardnum { position: relative; }
+    .cardnum input { padding-right: 70px; font-variant-numeric: tabular-nums; letter-spacing: .04em; }
+    .brand-tag { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: .66rem; font-weight: 800; letter-spacing: .08em; padding: 4px 8px; border-radius: 5px; background: var(--line); color: var(--muted); text-transform: uppercase; transition: all .2s; }
+    .brand-tag.visa { background: #1a1f71; color: #fff; }
+    .brand-tag.mastercard { background: #eb001b; color: #fff; }
+    .brand-tag.amex { background: #2e77bc; color: #fff; }
+    .brand-tag.discover { background: #f68121; color: #fff; }
+    .summary { display: flex; justify-content: space-between; align-items: center; gap: 12px; background: var(--blue-wash); border-radius: 12px; padding: 12px 16px; margin-bottom: 18px; font-size: .88rem; }
+    .summary b { font: italic 800 1.5rem/1 var(--display); color: var(--blue); }
+    .summary button { background: none; border: 0; color: var(--blue); font-weight: 600; font-size: .8rem; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+    .pay { width: 100%; justify-content: center; font-size: .88rem; padding: 17px; margin-top: 6px; position: relative; }
+    .pay[disabled] { opacity: .85; cursor: progress; transform: none; }
+    .spinner { width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,.35); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .secure { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 12px; font-size: .74rem; color: var(--muted); }
+    .secure svg { width: 13px; height: 13px; }
+    .form-alert { background: #fdecec; border: 1px solid #f3c2c2; color: #8f2424; border-radius: 10px; padding: 11px 14px; font-size: .84rem; margin-bottom: 14px; }
+    .form-alert:empty { display: none; }
+    .done { text-align: center; padding-top: 6px; }
+    .check { width: 84px; height: 84px; margin: 4px auto 18px; }
+    .check circle { stroke: var(--blue); stroke-width: 3; fill: var(--blue-wash); stroke-dasharray: 230; stroke-dashoffset: 230; animation: draw .7s var(--ease) forwards; }
+    .check path { stroke: var(--blue); stroke-width: 4; fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 50; stroke-dashoffset: 50; animation: draw .45s .55s var(--ease) forwards; }
+    @keyframes draw { to { stroke-dashoffset: 0; } }
+    .done .pill-ok { display: inline-flex; align-items: center; gap: 6px; background: #e7f6ec; color: #1d7a3e; font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; padding: 6px 12px; border-radius: 99px; margin-bottom: 12px; }
+    .done .pill-ok::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+    .receipt { text-align: left; border: 1px dashed #c7d2de; border-radius: 14px; padding: 6px 18px; margin: 22px 0 18px; font-size: .88rem; }
+    .receipt div { display: flex; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+    .receipt div:last-child { border-bottom: 0; }
+    .receipt dt { color: var(--muted); }
+    .receipt dd { font-weight: 600; text-align: right; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+    .done-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .btn.line { border-color: var(--line); color: var(--ink); background: #fff; }
+    .btn.line:hover { border-color: var(--blue); color: var(--blue); }
+    .back { background: none; border: 0; color: var(--muted); font-size: .82rem; cursor: pointer; margin-bottom: 14px; padding: 0; }
+    .back:hover { color: var(--blue); }
+    @media (max-width: 600px) {
+      dialog.donate-modal { width: 100%; max-height: 94dvh; margin: auto 0 0; border-radius: 22px 22px 0 0; }
+      .dm-head, .dm-body { padding-inline: 18px; }
+      .row3 { grid-template-columns: 1fr 1fr; }
+      .row3 .field:first-child { grid-column: 1 / -1; }
     }
     @media (prefers-reduced-motion: reduce) {
-      .status::before { animation: none; }
+      dialog.donate-modal[open], dialog.donate-modal::backdrop { animation: none; }
+      .check circle, .check path { animation: none; stroke-dashoffset: 0; }
+    }
+
+    .toast {
+      position: fixed; left: 50%; bottom: 28px; transform: translate(-50%, 200%); opacity: 0;
+      background: var(--ink); color: #fff; padding: 14px 22px; border-radius: 99px; font-size: .9rem; z-index: 2147483647;
+      box-shadow: 0 12px 30px -10px rgba(0,0,0,.4); transition: transform .45s cubic-bezier(.2,.9,.3,1.2), opacity .3s;
+    }
+    .toast.show { transform: translate(-50%, 0); opacity: 1; }
+
+    /* Reveal on scroll: content is visible by default; JS adds the motion only when it can run. */
+    .js .reveal { opacity: 0; transform: translateY(24px); transition: opacity .8s var(--ease), transform .8s var(--ease); }
+    .js .reveal.in { opacity: 1; transform: none; }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 1060px) {
+      .grid.four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      nav.main ul { gap: 20px; }
+    }
+    @media (max-width: 900px) {
+      .menu-toggle { display: block; }
+      nav.main {
+        position: absolute; top: 86px; left: 0; right: 0; background: #fff; border-bottom: 1px solid var(--line);
+        box-shadow: 0 20px 30px -20px rgba(10,37,64,.4); display: none;
+      }
+      nav.main.open { display: block; }
+      nav.main ul { flex-direction: column; gap: 0; padding: 8px 16px 18px; }
+      nav.main li a { display: block; padding: 15px 4px; border-bottom: 1px solid var(--line); }
+      nav.main li a::after { display: none; }
+      .bar .celebrate { margin-left: auto; padding: 10px 14px; }
+      .menu-toggle { margin-left: 4px; }
+      .grid.three { grid-template-columns: minmax(0, 1fr); }
+      .grid.three .card { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); }
+      .grid.three .card .media { aspect-ratio: auto; min-height: 220px; }
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .stat:nth-child(3) { border-left: 0; }
+      .stat:nth-child(n+3) { border-top: 1px solid var(--line); }
+      .cta, .split, .foot { grid-template-columns: minmax(0, 1fr); }
+      .hero::before { background: linear-gradient(0deg, rgba(10,37,64,.95) 10%, rgba(1,63,108,.6) 60%, rgba(1,63,108,.35) 100%); }
+    }
+    @media (max-width: 600px) {
+      .grid.four { grid-template-columns: minmax(0, 1fr); }
+      .grid.three .card { display: flex; }
+      .grid.three .card .media { aspect-ratio: 16 / 10; min-height: 0; }
+      .grid.four .card .media { aspect-ratio: 16 / 10; }
+      .slide-ui .arrow { display: none; }
+      .caption { font-size: .66rem; }
+      .stat { padding: 22px 18px; }
+      .contact-card { margin: -50px 12px 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .slide, .slide img, .card, .card .media img, .btn, .toast, .path { transition: none; animation: none; }
+      .slide img { transform: none; }
+      .dot.active::after { animation: none; transform: scaleX(1); }
+      .js .reveal { opacity: 1; transform: none; transition: none; }
     }
   </style>
 </head>
 <body>
-  <main>
-    <img class="logo" src="assets/logo.png" alt="Lake County Tech Campus Foundation" width="1781" height="483">
+  <a class="skip" href="#main">Skip to content</a>
 
-    <span class="status">Under construction</span>
+  <header class="site" id="header">
+    <div class="wrap bar">
+      <a class="brand" href="#top" aria-label="LCTC Foundation home"><img src="assets/logo.png" alt="Lake County Tech Campus Foundation" width="1781" height="483"></a>
+      <nav class="main" id="nav" aria-label="Main">
+        <ul>
+          <li><a href="#what-we-do">What we do</a></li>
+          <li><a href="#ways-to-help">Ways to help</a></li>
+          <li><a href="#events">Events</a></li>
+          <li><a href="#who-we-are">Who we are</a></li>
+        </ul>
+      </nav>
+      <button class="celebrate donate" type="button" data-donate><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.5 3 4.5 6.8 4.5c2.1 0 3.6 1.1 4.2 2.4h2c.6-1.3 2.1-2.4 4.2-2.4 3.8 0 5.9 4 4.4 7.3C19.5 16.4 12 21 12 21Z"/></svg>Donate</button>
+      <button class="menu-toggle" type="button" aria-controls="nav" aria-expanded="false" aria-label="Open menu"><span></span><span></span><span></span></button>
+    </div>
+  </header>
 
-    <h1>Something new is <em>coming soon.</em></h1>
+  <main id="main">
+    <!-- Hero slideshow -->
+    <section class="hero" id="top" aria-roledescription="carousel" aria-label="Students at work">
+      <div class="slide active" data-caption="Welding / Fabrication"><img src="assets/img/welding.jpg" alt="A welding student in a helmet working at a bench as sparks fly" width="1024" height="683" fetchpriority="high"></div>
+      <div class="slide" data-caption="Health careers"><img src="assets/img/nursing.jpg" alt="Nursing and EMT students smiling during a simulation exercise" width="1024" height="738" loading="lazy"></div>
+      <div class="slide" data-caption="Culinary Arts"><img src="assets/img/culinary.jpg" alt="A culinary student in chef whites piping icing in a teaching kitchen" width="1024" height="683" loading="lazy"></div>
+      <div class="slide" data-caption="Construction Skills"><img src="assets/img/construction.jpg" alt="Three students in hard hats measuring a wooden frame" width="1024" height="683" loading="lazy"></div>
+      <div class="slide" data-caption="Cosmetology"><img src="assets/img/cosmetology.jpg" alt="Cosmetology students styling hair for guests" width="1024" height="683" loading="lazy"></div>
 
-    <p>Our website is being built. In the meantime, we'd love to hear from you.</p>
+      <div class="hero-copy">
+        <div class="wrap">
+          <p class="eyebrow">Lake County Tech Campus Foundation</p>
+          <h1>Skills. Success. Future.</h1>
+          <p class="lede">We help Lake County students turn hands-on career training into real careers, through scholarships, tools, certifications and the community behind them.</p>
+          <div class="hero-actions">
+            <button class="btn solid" type="button" data-donate>Donate today</button>
+            <a class="btn ghost" href="#ways-to-help">Get involved</a>
+          </div>
+        </div>
+      </div>
 
-    <a class="contact" href="mailto:edelrio@techcampus.org">edelrio@techcampus.org</a>
+      <div class="slide-ui">
+        <div class="wrap">
+          <p class="caption" aria-live="polite"></p>
+          <div class="dots" role="tablist" aria-label="Choose slide"></div>
+          <button class="arrow" type="button" data-dir="-1" aria-label="Previous slide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg></button>
+          <button class="arrow" type="button" data-dir="1" aria-label="Next slide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg></button>
+        </div>
+      </div>
+    </section>
+
+    <div class="stat-strip">
+      <div class="wrap">
+        <div class="stats">
+          <div class="stat"><b data-count="2500" data-suffix="+">2,500+</b><span>students each year</span></div>
+          <div class="stat"><b data-count="22">22</b><span>partner high schools</span></div>
+          <div class="stat"><b data-count="18">18</b><span>career programs</span></div>
+          <div class="stat"><b data-count="25">25</b><span>industry certifications</span></div>
+        </div>
+      </div>
+    </div>
+
+    <section class="intro reveal">
+      <div class="wrap">
+        <h2>Creating bright futures for students and families in Lake County</h2>
+        <p>Students from 22 high schools come to Tech Campus to learn a trade on real equipment. The Foundation makes sure cost never decides who gets to finish.</p>
+      </div>
+    </section>
+
+    <!-- What we do -->
+    <section class="block" id="what-we-do">
+      <div class="wrap">
+        <div class="head reveal">
+          <div>
+            <p class="kicker">What we do</p>
+            <h2>Building futures, one trade at a time</h2>
+            <p>We fill the gaps between a great program and a great start: the fees, gear and connections that help students finish strong.</p>
+          </div>
+        </div>
+        <div class="grid three">
+          <article class="card reveal">
+            <div class="media"><img src="assets/img/graduates.jpg" alt="Two smiling graduates in caps and gowns" width="1024" height="683" loading="lazy"><span class="badge">Celebrating achievements</span></div>
+            <div class="content">
+              <h3>Scholarship Program</h3>
+              <p>Each spring we award scholarships to Tech Campus students heading to college, apprenticeships or straight into the workforce.</p>
+              <button class="more" type="button" data-donate="Scholarships">Give to scholarships</button>
+            </div>
+          </article>
+          <article class="card reveal">
+            <div class="media"><img src="assets/img/welder-shop.jpg" alt="A welding student in an apron inspecting a metal piece in the shop" width="1024" height="683" loading="lazy"><span class="badge">Removing barriers</span></div>
+            <div class="content">
+              <h3>Tools &amp; Equipment</h3>
+              <p>Starter kits, uniforms and protective gear, so no student misses out because of what their family can afford.</p>
+              <button class="more" type="button" data-donate="Tools &amp; Equipment">Help equip a student</button>
+            </div>
+          </article>
+          <article class="card reveal">
+            <div class="media"><img src="assets/img/nurse-sim.jpg" alt="A health careers student practicing patient care in a simulation lab" width="1023" height="716" loading="lazy"><span class="badge">Empowering futures</span></div>
+            <div class="content">
+              <h3>Certifications</h3>
+              <p>Covering exam fees for the 25 industry certifications students can earn, from nurse assisting to welding to cybersecurity.</p>
+              <button class="more" type="button" data-donate="Certifications">Fund a certification</button>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quote band -->
+    <section class="photo-band" aria-label="Our belief">
+      <img src="assets/img/sparks.jpg" alt="" width="1024" height="696" loading="lazy">
+      <div class="wrap reveal">
+        <blockquote>Every student deserves a skill they can build a life on.</blockquote>
+        <cite>Lake County Tech Campus Foundation</cite>
+      </div>
+    </section>
+
+    <!-- Pathways -->
+    <section class="block tint" id="programs">
+      <div class="wrap">
+        <div class="head reveal">
+          <div>
+            <p class="kicker">The programs you support</p>
+            <h2>18 career pathways</h2>
+            <p>Every program pairs classroom learning with real equipment and industry standards, plus over 100 hours of dual college credit.</p>
+          </div>
+        </div>
+        <div class="filters" role="group" aria-label="Filter programs">
+          <button class="chip" type="button" data-filter="all" aria-pressed="true">All 18</button>
+          <button class="chip" type="button" data-filter="health" aria-pressed="false">Health</button>
+          <button class="chip" type="button" data-filter="safety" aria-pressed="false">Public safety</button>
+          <button class="chip" type="button" data-filter="trades" aria-pressed="false">Trades &amp; transport</button>
+          <button class="chip" type="button" data-filter="tech" aria-pressed="false">Tech &amp; media</button>
+          <button class="chip" type="button" data-filter="service" aria-pressed="false">Service &amp; education</button>
+        </div>
+        <div class="paths" id="paths">
+          <div class="path" data-cat="trades"><i>🚗</i><div><small>Trades &amp; transport</small><span>Automotive Collision Repair</span></div></div>
+          <div class="path" data-cat="trades"><i>🔧</i><div><small>Trades &amp; transport</small><span>Automotive Service</span></div></div>
+          <div class="path" data-cat="health"><i>🧬</i><div><small>Health</small><span>Biomedical Science</span></div></div>
+          <div class="path" data-cat="health"><i>🩺</i><div><small>Health</small><span>Certified Nurse Assisting</span></div></div>
+          <div class="path" data-cat="trades"><i>🏗️</i><div><small>Trades &amp; transport</small><span>Construction Skills &amp; Management</span></div></div>
+          <div class="path" data-cat="service"><i>💇</i><div><small>Service &amp; education</small><span>Cosmetology</span></div></div>
+          <div class="path" data-cat="safety"><i>🚓</i><div><small>Public safety</small><span>Intro to Criminal Justice &amp; Policing</span></div></div>
+          <div class="path" data-cat="service"><i>🍳</i><div><small>Service &amp; education</small><span>Culinary Arts</span></div></div>
+          <div class="path" data-cat="tech"><i>🔐</i><div><small>Tech &amp; media</small><span>Cybersecurity</span></div></div>
+          <div class="path" data-cat="service"><i>🍎</i><div><small>Service &amp; education</small><span>Early Education &amp; Teaching</span></div></div>
+          <div class="path" data-cat="health"><i>🚑</i><div><small>Health</small><span>Emergency Medical Services</span></div></div>
+          <div class="path" data-cat="safety"><i>🚒</i><div><small>Public safety</small><span>Firefighting</span></div></div>
+          <div class="path" data-cat="tech"><i>🎮</i><div><small>Tech &amp; media</small><span>Game Programming &amp; Virtualization</span></div></div>
+          <div class="path" data-cat="trades"><i>⚙️</i><div><small>Trades &amp; transport</small><span>Industrial Technology</span></div></div>
+          <div class="path" data-cat="safety"><i>🔎</i><div><small>Public safety</small><span>Criminal Justice Careers &amp; Forensic Investigation</span></div></div>
+          <div class="path" data-cat="health"><i>💉</i><div><small>Health</small><span>Medical Assisting</span></div></div>
+          <div class="path" data-cat="tech"><i>🎬</i><div><small>Tech &amp; media</small><span>Multimedia</span></div></div>
+          <div class="path" data-cat="trades"><i>🔥</i><div><small>Trades &amp; transport</small><span>Welding / Fabrication</span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Ways to help -->
+    <section class="block" id="ways-to-help">
+      <div class="wrap">
+        <div class="head reveal">
+          <div>
+            <p class="kicker">Ways to help</p>
+            <h2>Brighter futures start with you</h2>
+            <p>Give your time, your expertise or your company's support. Pick the way that fits and we'll take it from there.</p>
+          </div>
+          <a class="text-link" href="#contact">Contact the Foundation →</a>
+        </div>
+        <div class="grid four">
+          <article class="card reveal">
+            <div class="media"><img src="assets/img/mentoring.jpg" alt="A mentor helping students working on laptops" width="1024" height="683" loading="lazy"></div>
+            <div class="content">
+              <h3>Mentor a student</h3>
+              <p>Share what your career is really like through mock interviews, job shadows and classroom visits.</p>
+              <a class="more" href="#contact">Volunteer</a>
+            </div>
+          </article>
+          <article class="card reveal">
+            <div class="media"><img src="assets/img/auto.jpg" alt="Students working underneath a car on a lift" width="1024" height="683" loading="lazy"></div>
+            <div class="content">
+              <h3>Partner as a business</h3>
+              <p>Offer internships, host a site visit or hire graduates who arrive certified and ready.</p>
+              <a class="more" href="#contact">Become a partner</a>
+            </div>
+          </article>
+          <article class="card reveal">
+            <div class="media"><img src="assets/img/catering.jpg" alt="Three culinary students in chef coats serving at an event" width="1024" height="732" loading="lazy"></div>
+            <div class="content">
+              <h3>Sponsor a program</h3>
+              <p>Put your name on a scholarship or provide equipment for one of the 18 pathways.</p>
+              <a class="more" href="#contact">Talk to us</a>
+            </div>
+          </article>
+          <article class="card reveal">
+            <div class="media"><img src="assets/img/salon.jpg" alt="Cosmetology students laughing while giving manicures" width="1024" height="729" loading="lazy"></div>
+            <div class="content">
+              <h3>Spread the word</h3>
+              <p>Tell a student, parent or employer about Tech Campus. Every introduction counts.</p>
+              <button class="more" type="button" data-share>Copy site link</button>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Events -->
+    <section class="block tint" id="events">
+      <div class="wrap">
+        <div class="head reveal">
+          <div>
+            <p class="kicker">Events</p>
+            <h2>We are stronger together</h2>
+            <p>Come see the campus, meet the students and celebrate the people who make it work.</p>
+          </div>
+          <a class="text-link" href="https://www.techcampus.org" target="_blank" rel="noopener">Full campus calendar →</a>
+        </div>
+        <div class="grid three">
+          <article class="card event reveal">
+            <div class="media">
+              <div class="clip"><img src="assets/img/nails.jpg" alt="A cosmetology student giving a manicure" width="1023" height="682" loading="lazy"></div>
+              <div class="date"><span class="m">OCT</span><span class="d">17</span><span class="w">Sat</span></div>
+            </div>
+            <div class="content">
+              <p class="time">8:00 AM – 2:00 PM</p>
+              <h3>Cosmetology Saturdays</h3>
+              <p>Book a salon service with Tech Campus cosmetology students.</p>
+            </div>
+          </article>
+          <article class="card event reveal">
+            <div class="media">
+              <div class="clip"><img src="assets/img/construction.jpg" alt="Students in hard hats working on a construction project" width="1024" height="683" loading="lazy"></div>
+              <div class="date"><span class="m">OCT</span><span class="d">22</span><span class="w">Thu</span></div>
+            </div>
+            <div class="content">
+              <p class="time">10:30 AM – 3:00 PM</p>
+              <h3>Celebration of Partnerships</h3>
+              <p>Honoring the businesses and community partners behind our programs.</p>
+            </div>
+          </article>
+          <article class="card event reveal">
+            <div class="media">
+              <div class="clip"><img src="assets/img/laptops.jpg" alt="Students working together on laptops in a classroom" width="1024" height="683" loading="lazy"></div>
+              <div class="date"><span class="m">NOV</span><span class="d">12</span><span class="w">Thu</span></div>
+            </div>
+            <div class="content">
+              <p class="time">4:00 – 7:00 PM</p>
+              <h3>Tour of Tech</h3>
+              <p>An open house for families. Walk the labs and talk with instructors.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Celebrate + Who we are -->
+    <section class="block" id="who-we-are">
+      <div class="wrap">
+        <div class="cta reveal">
+          <div>
+            <h2>Brighter futures start with you</h2>
+            <p>Your gift puts scholarships, tools and certifications in the hands of Lake County students. Every gift counts, and every one gets a little confetti.</p>
+          </div>
+          <div class="hero-actions" style="margin-top:0">
+            <button class="btn solid" type="button" data-donate>Make your gift today</button>
+            <button class="btn ghost" type="button" data-confetti>Throw confetti 🎉</button>
+          </div>
+        </div>
+
+        <div class="split" style="margin-top: clamp(80px, 10vw, 120px)">
+          <div class="copy reveal">
+            <p class="kicker">Who we are</p>
+            <h2>A foundation for the careers Lake County runs on</h2>
+            <p>The <strong>Lake County Tech Campus Foundation</strong> supports students at Lake County Tech Campus in Grayslake, a career and technical education school that calls itself "a School of Opportunity that encourages a passion for learning."</p>
+            <p>More than 2,500 students from 22 partner high schools spend part of their school day here, training in 18 programs and earning certifications and college credit before they graduate.</p>
+            <p>We'd love to hear from you, whether you want to mentor, partner or simply learn more.</p>
+          </div>
+          <div class="stack reveal">
+            <div class="big"><img src="assets/img/welding.jpg" alt="A welding student at work in the shop" width="1024" height="683" loading="lazy"></div>
+            <dl class="contact-card" id="contact">
+              <div><dt>Email</dt><dd><a href="mailto:edelrio@techcampus.org">edelrio@techcampus.org</a><button class="copy-btn" type="button" data-copy="edelrio@techcampus.org">Copy</button></dd></div>
+              <div><dt>Phone</dt><dd><a href="tel:+18472236681">(847) 223-6681</a></dd></div>
+              <div><dt>Visit</dt><dd>19525 West Washington St., Grayslake, IL 60030</dd></div>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
-  <footer>
-    <span>19525 West Washington St., Grayslake, IL 60030</span>
-    <a href="https://www.techcampus.org" target="_blank" rel="noopener">techcampus.org</a>
+  <footer class="site">
+    <div class="wrap">
+      <div class="foot">
+        <div>
+          <span class="logo-chip"><img src="assets/logo.png" alt="Lake County Tech Campus Foundation" width="1781" height="483" loading="lazy"></span>
+          <p>Skills. Success. Future.</p>
+        </div>
+        <div>
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="#what-we-do">What we do</a></li>
+            <li><a href="#ways-to-help">Ways to help</a></li>
+            <li><a href="#events">Events</a></li>
+            <li><a href="#who-we-are">Who we are</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <ul>
+            <li>19525 West Washington St., Grayslake, IL 60030</li>
+            <li><a href="tel:+18472236681">(847) 223-6681</a></li>
+            <li><a href="https://www.techcampus.org" target="_blank" rel="noopener">techcampus.org</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <details class="credits">
+        <summary>Photo credits</summary>
+        <ul>
+          <li>Welding, culinary, cosmetology, nursing and EMT photos: <a href="https://www.flickr.com/photos/41431665@N07" target="_blank" rel="noopener">COD Newsroom (College of DuPage)</a>, <a href="https://creativecommons.org/licenses/by/2.0/" target="_blank" rel="noopener">CC BY 2.0</a></li>
+          <li>Graduates: <a href="https://www.flickr.com/photos/60202180@N00/152285899" target="_blank" rel="noopener">breezy421</a>, <a href="https://creativecommons.org/licenses/by/2.0/" target="_blank" rel="noopener">CC BY 2.0</a></li>
+          <li>Culinary event: <a href="https://www.flickr.com/photos/44080391@N07/5401734615" target="_blank" rel="noopener">VIUDeepBay</a>, <a href="https://creativecommons.org/licenses/by/2.0/" target="_blank" rel="noopener">CC BY 2.0</a></li>
+          <li>Carpentry and auto: <a href="https://www.flickr.com/photos/135886671@N08" target="_blank" rel="noopener">USDA Forest Service, Pacific Northwest Region</a>, public domain</li>
+          <li>Mentoring and laptops: <a href="https://www.flickr.com/photos/131622585@N06" target="_blank" rel="noopener">U.S. Army Cyber Command</a>, public domain</li>
+        </ul>
+      </details>
+
+      <div class="fine">
+        <span>© <span id="yr">2026</span> Lake County Tech Campus Foundation</span>
+        <span>Grayslake, Illinois</span>
+      </div>
+    </div>
   </footer>
+
+  <dialog class="donate-modal" id="donate" aria-labelledby="dm-title">
+    <canvas class="dm-confetti" aria-hidden="true"></canvas>
+    <div class="dm-head">
+      <img src="assets/logo.png" alt="LCTC Foundation" width="1781" height="483">
+      <button class="x" type="button" data-close aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <div class="dm-body">
+      <p class="demo-note" role="note"><span aria-hidden="true">⚠️</span><span><b>Demo mode.</b> No card is charged and nothing is sent or saved. Use test card <code data-fill="4242424242424242" title="Click to fill">4242 4242 4242 4242</code> with any future date and any CVC. <code data-fill="4000000000000002" title="Click to fill">4000 0000 0000 0002</code> shows a decline.</span></p>
+      <ol class="steps" aria-hidden="true"><li class="on"></li><li></li><li></li></ol>
+
+      <!-- Step 1: amount -->
+      <section data-step="1">
+        <h2 class="dm-title" id="dm-title">Make a gift</h2>
+        <p class="dm-sub">Choose an amount and where you'd like it to go.</p>
+        <div class="seg" role="group" aria-label="Gift frequency">
+          <button type="button" data-freq="once" aria-pressed="true">One-time</button>
+          <button type="button" data-freq="monthly" aria-pressed="false">Monthly</button>
+        </div>
+        <div class="amounts" role="group" aria-label="Gift amount">
+          <button class="amt" type="button" data-amt="25">$25</button>
+          <button class="amt" type="button" data-amt="50" aria-pressed="true">$50</button>
+          <button class="amt" type="button" data-amt="100">$100</button>
+          <button class="amt" type="button" data-amt="250">$250</button>
+          <button class="amt" type="button" data-amt="500">$500</button>
+          <button class="amt" type="button" data-amt="1000">$1,000</button>
+        </div>
+        <div class="field custom">
+          <label for="d-custom" class="lbl" style="position:absolute;left:-9999px">Other amount</label>
+          <span aria-hidden="true">$</span>
+          <input id="d-custom" type="text" inputmode="decimal" placeholder="Other amount" autocomplete="off">
+          <p class="err" id="e-amount"></p>
+        </div>
+        <div class="field">
+          <label for="d-fund">Direct my gift to</label>
+          <select id="d-fund">
+            <option>Where it's needed most</option>
+            <option>Scholarships</option>
+            <option>Tools &amp; Equipment</option>
+            <option>Certifications</option>
+          </select>
+        </div>
+        <button class="btn blue pay" type="button" data-next>Continue</button>
+      </section>
+
+      <!-- Step 2: details + card -->
+      <section data-step="2" hidden>
+        <button class="back" type="button" data-back>← Change amount</button>
+        <div class="summary"><span><span id="s-freq">One-time gift</span> · <span id="s-fund"></span></span><b id="s-amt">$50</b></div>
+        <form id="pay-form" novalidate autocomplete="off">
+          <p class="form-alert" id="form-alert" role="alert"></p>
+          <div class="row2">
+            <div class="field"><label for="d-name">Full name</label><input id="d-name" type="text" autocomplete="off" aria-describedby="e-name"><p class="err" id="e-name"></p></div>
+            <div class="field"><label for="d-email">Email for receipt</label><input id="d-email" type="email" autocomplete="off" aria-describedby="e-email"><p class="err" id="e-email"></p></div>
+          </div>
+          <div class="cardbox">
+            <div class="field cardnum"><label for="d-card">Card number</label><input id="d-card" type="text" inputmode="numeric" autocomplete="off" placeholder="1234 1234 1234 1234" aria-describedby="e-card"><span class="brand-tag" id="brand">Card</span><p class="err" id="e-card"></p></div>
+            <div class="row3">
+              <div class="field"><label for="d-exp">Expiry</label><input id="d-exp" type="text" inputmode="numeric" autocomplete="off" placeholder="MM / YY" aria-describedby="e-exp"><p class="err" id="e-exp"></p></div>
+              <div class="field"><label for="d-cvc">CVC</label><input id="d-cvc" type="text" inputmode="numeric" autocomplete="off" placeholder="123" aria-describedby="e-cvc"><p class="err" id="e-cvc"></p></div>
+              <div class="field"><label for="d-zip">ZIP</label><input id="d-zip" type="text" inputmode="numeric" autocomplete="off" placeholder="60030" aria-describedby="e-zip"><p class="err" id="e-zip"></p></div>
+            </div>
+          </div>
+          <button class="btn blue pay" type="submit" id="pay-btn">Donate $50</button>
+          <p class="secure"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Demo checkout. Card details never leave this page.</p>
+        </form>
+      </section>
+
+      <!-- Step 3: accepted -->
+      <section data-step="3" hidden class="done" aria-live="polite">
+        <svg class="check" viewBox="0 0 84 84" aria-hidden="true"><circle cx="42" cy="42" r="36"/><path d="m28 43 10 10 18-20"/></svg>
+        <p class="pill-ok">Donation accepted</p>
+        <h2 class="dm-title">Thank you<span id="r-first"></span>!</h2>
+        <p class="dm-sub" id="r-line" style="margin-bottom:0"></p>
+        <dl class="receipt">
+          <div><dt>Confirmation</dt><dd id="r-id"></dd></div>
+          <div><dt>Amount</dt><dd id="r-amt"></dd></div>
+          <div><dt>Designation</dt><dd id="r-fund"></dd></div>
+          <div><dt>Payment</dt><dd id="r-card"></dd></div>
+          <div><dt>Date</dt><dd id="r-date"></dd></div>
+        </dl>
+        <p class="dm-sub" style="font-size:.78rem">This is a demo receipt. No money was charged and no email was sent.</p>
+        <div class="done-actions">
+          <button class="btn blue" type="button" data-close>Done</button>
+          <button class="btn line" type="button" data-confetti>More confetti 🎉</button>
+        </div>
+      </section>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <script>
+    document.documentElement.classList.add("js");
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const palette = ["#015998", "#013f6c", "#a7aab0", "#ffffff", "#5fa8e0"];
+    // An open <dialog> sits in the browser's top layer, above any z-index, so it gets its own confetti canvas.
+    let dialogFx;
+    function burst() {
+      if (typeof confetti !== "function") return null;
+      const dlg = document.getElementById("donate");
+      if (!dlg.open) return confetti;
+      return dialogFx ||= confetti.create(dlg.querySelector(".dm-confetti"), { resize: true });
+    }
+
+    // Toast
+    const toast = document.getElementById("toast");
+    let toastTimer;
+    function say(msg) {
+      const dlg = document.getElementById("donate");
+      (dlg.open ? dlg : document.body).appendChild(toast);
+      toast.textContent = msg; toast.classList.add("show");
+      clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.classList.remove("show"), 2400);
+    }
+
+    // Confetti
+    function throwConfetti(el) {
+      const fx = burst();
+      if (!fx) return say("🎉 Thanks for celebrating with us!");
+      const r = el.getBoundingClientRect();
+      const origin = { x: (r.left + r.width / 2) / innerWidth, y: (r.top + r.height / 2) / innerHeight };
+      if (reduce) {
+        fx({ particleCount: 60, spread: 70, origin, colors: palette, ticks: 80 });
+      } else {
+        fx({ particleCount: 130, spread: 85, startVelocity: 45, origin, colors: palette });
+        setTimeout(() => {
+          fx({ particleCount: 80, angle: 60, spread: 60, origin: { x: 0, y: .75 }, colors: palette });
+          fx({ particleCount: 80, angle: 120, spread: 60, origin: { x: 1, y: .75 }, colors: palette });
+        }, 220);
+      }
+      say("🎉 Here's to Lake County students!");
+    }
+    document.querySelectorAll("[data-confetti]").forEach(b => b.addEventListener("click", () => throwConfetti(b)));
+
+    // Header shadow + active nav link
+    const header = document.getElementById("header");
+    addEventListener("scroll", () => header.classList.toggle("scrolled", scrollY > 10), { passive: true });
+    const navLinks = [...document.querySelectorAll("nav.main a")];
+    const spy = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting) navLinks.forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + e.target.id));
+    }), { rootMargin: "-45% 0px -50% 0px" });
+    ["what-we-do", "ways-to-help", "events", "who-we-are"].forEach(id => spy.observe(document.getElementById(id)));
+
+    // Mobile menu
+    const toggle = document.querySelector(".menu-toggle"), nav = document.getElementById("nav");
+    toggle.addEventListener("click", () => {
+      const open = nav.classList.toggle("open");
+      toggle.setAttribute("aria-expanded", open);
+      toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    });
+    nav.querySelectorAll("a").forEach(a => a.addEventListener("click", () => {
+      nav.classList.remove("open"); toggle.setAttribute("aria-expanded", "false");
+    }));
+
+    // Hero slideshow
+    (() => {
+      const hero = document.querySelector(".hero");
+      const slides = [...hero.querySelectorAll(".slide")];
+      const dotsWrap = hero.querySelector(".dots"), caption = hero.querySelector(".caption");
+      const DUR = 6000; let i = 0, timer;
+      hero.style.setProperty("--dur", DUR + "ms");
+      const dots = slides.map((s, n) => {
+        const d = document.createElement("button");
+        d.className = "dot"; d.type = "button"; d.setAttribute("aria-label", "Show " + s.dataset.caption);
+        d.addEventListener("click", () => { go(n); restart(); });
+        dotsWrap.appendChild(d); return d;
+      });
+      function go(n) {
+        i = (n + slides.length) % slides.length;
+        slides.forEach((s, k) => s.classList.toggle("active", k === i));
+        dots.forEach((d, k) => { d.classList.remove("active"); if (k === i) { void d.offsetWidth; d.classList.add("active"); } });
+        caption.innerHTML = "<b>" + String(i + 1).padStart(2, "0") + "</b> / " + String(slides.length).padStart(2, "0") + " &nbsp;·&nbsp; " + slides[i].dataset.caption;
+      }
+      function restart() { clearInterval(timer); if (!reduce) timer = setInterval(() => go(i + 1), DUR); }
+      hero.querySelectorAll(".arrow").forEach(b => b.addEventListener("click", () => { go(i + +b.dataset.dir); restart(); }));
+      hero.addEventListener("mouseenter", () => { clearInterval(timer); hero.classList.add("paused"); });
+      hero.addEventListener("mouseleave", () => { hero.classList.remove("paused"); restart(); });
+      go(0); restart();
+    })();
+
+    // Count-up stats
+    const fmt = n => n.toLocaleString("en-US");
+    const counter = new IntersectionObserver(es => es.forEach(e => {
+      if (!e.isIntersecting) return;
+      counter.unobserve(e.target);
+      const el = e.target, end = +el.dataset.count, suf = el.dataset.suffix || "";
+      if (reduce) return;
+      const t0 = performance.now(), dur = 1400;
+      const tick = t => {
+        const p = Math.min(1, (t - t0) / dur), v = Math.round(end * (1 - Math.pow(1 - p, 3)));
+        el.textContent = fmt(v) + suf; if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }), { threshold: .6 });
+    document.querySelectorAll("[data-count]").forEach(el => counter.observe(el));
+
+    // Reveal on scroll
+    const revealer = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add("in"); revealer.unobserve(e.target); }
+    }), { rootMargin: "0px 0px -8% 0px" });
+    document.querySelectorAll(".reveal").forEach((el, n) => {
+      el.style.transitionDelay = (el.closest(".grid") ? [...el.parentNode.children].indexOf(el) * 90 : 0) + "ms";
+      revealer.observe(el);
+    });
+
+    // Program filters
+    const chips = document.querySelectorAll(".chip");
+    chips.forEach(c => c.addEventListener("click", () => {
+      chips.forEach(x => x.setAttribute("aria-pressed", x === c));
+      const f = c.dataset.filter;
+      document.querySelectorAll(".path").forEach(p => {
+        p.hidden = f !== "all" && p.dataset.cat !== f;
+        if (!p.hidden) { p.style.animation = "none"; void p.offsetWidth; p.style.animation = ""; }
+      });
+    }));
+
+    // ---------- Donation (demo only: nothing is sent or stored) ----------
+    (() => {
+      const dlg = document.getElementById("donate");
+      const $ = id => document.getElementById(id);
+      const steps = [...dlg.querySelectorAll("[data-step]")], bars = [...dlg.querySelectorAll(".steps li")];
+      const money = n => "$" + n.toLocaleString("en-US", { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 });
+      const TEST = { "4242424242424242": "ok", "5555555555554444": "ok", "378282246310005": "ok", "6011111111111117": "ok", "4000000000000002": "decline" };
+      const state = { amount: 50, freq: "once" };
+
+      function show(n) {
+        steps.forEach(s => s.hidden = +s.dataset.step !== n);
+        bars.forEach((b, k) => b.classList.toggle("on", k < n));
+        dlg.querySelector(".dm-body").scrollTop = 0;
+        if (n === 2) setTimeout(() => $("d-name").focus(), 50);
+      }
+      function payLabel() { return "Donate " + money(state.amount) + (state.freq === "monthly" ? " monthly" : ""); }
+      function syncStep1() {
+        dlg.querySelectorAll("[data-freq]").forEach(b => b.setAttribute("aria-pressed", b.dataset.freq === state.freq));
+        dlg.querySelectorAll("[data-amt]").forEach(b => b.setAttribute("aria-pressed", !$("d-custom").value && +b.dataset.amt === state.amount));
+        dlg.querySelector("[data-next]").textContent = "Continue with " + money(state.amount) + (state.freq === "monthly" ? " / month" : "");
+      }
+      function wipe() {
+        ["d-name", "d-email", "d-card", "d-exp", "d-cvc", "d-zip", "d-custom"].forEach(id => { $(id).value = ""; $(id).removeAttribute("aria-invalid"); });
+        dlg.querySelectorAll(".err").forEach(e => e.textContent = ""); $("form-alert").textContent = "";
+        $("brand").className = "brand-tag"; $("brand").textContent = "Card";
+      }
+      function open(fund) {
+        wipe(); state.amount = 50; state.freq = "once";
+        $("d-fund").value = fund || "Where it's needed most";
+        syncStep1(); show(1);
+        dlg.showModal();
+      }
+      document.querySelectorAll("[data-donate]").forEach(b => b.addEventListener("click", () => open(b.dataset.donate)));
+      dlg.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", () => dlg.close()));
+      dlg.addEventListener("click", e => { if (e.target === dlg) dlg.close(); });
+      dlg.addEventListener("close", wipe);
+
+      // Step 1
+      dlg.querySelectorAll("[data-freq]").forEach(b => b.addEventListener("click", () => { state.freq = b.dataset.freq; syncStep1(); }));
+      dlg.querySelectorAll("[data-amt]").forEach(b => b.addEventListener("click", () => {
+        state.amount = +b.dataset.amt; $("d-custom").value = ""; $("e-amount").textContent = ""; syncStep1();
+      }));
+      $("d-custom").addEventListener("input", e => {
+        e.target.value = e.target.value.replace(/[^\d.]/g, "").replace(/(\..*)\./g, "$1").replace(/(\.\d{2}).+/, "$1");
+        const v = parseFloat(e.target.value);
+        if (v > 0) state.amount = v; else if (!e.target.value) state.amount = 50;
+        $("e-amount").textContent = ""; syncStep1();
+      });
+      dlg.querySelector("[data-next]").addEventListener("click", () => {
+        if (!(state.amount >= 5)) { $("e-amount").textContent = "Please enter at least $5."; $("d-custom").focus(); return; }
+        if (state.amount > 100000) { $("e-amount").textContent = "For gifts over $100,000, please contact us directly."; return; }
+        $("s-amt").textContent = money(state.amount) + (state.freq === "monthly" ? "/mo" : "");
+        $("s-freq").textContent = state.freq === "monthly" ? "Monthly gift" : "One-time gift";
+        $("s-fund").textContent = $("d-fund").value;
+        $("pay-btn").textContent = payLabel();
+        show(2);
+      });
+      dlg.querySelector("[data-back]").addEventListener("click", () => show(1));
+
+      // Card field formatting
+      const brandOf = d => /^4/.test(d) ? "visa" : /^(5[1-5]|2[2-7])/.test(d) ? "mastercard" : /^3[47]/.test(d) ? "amex" : /^6(011|5)/.test(d) ? "discover" : "";
+      $("d-card").addEventListener("input", e => {
+        const d = e.target.value.replace(/\D/g, "").slice(0, 16), b = brandOf(d);
+        const max = b === "amex" ? 15 : 16, dd = d.slice(0, max);
+        e.target.value = b === "amex" ? dd.replace(/^(\d{0,4})(\d{0,6})(\d{0,5}).*/, (m, a, c, f) => [a, c, f].filter(Boolean).join(" ")) : dd.replace(/(\d{4})(?=\d)/g, "$1 ");
+        $("brand").className = "brand-tag " + b; $("brand").textContent = b ? ({ visa: "Visa", mastercard: "Mastercard", amex: "Amex", discover: "Discover" })[b] : "Card";
+        $("d-cvc").placeholder = b === "amex" ? "1234" : "123";
+      });
+      $("d-exp").addEventListener("input", e => {
+        let d = e.target.value.replace(/\D/g, "").slice(0, 4);
+        if (d.length === 1 && d > "1") d = "0" + d;
+        e.target.value = d.length > 2 ? d.slice(0, 2) + " / " + d.slice(2) : d;
+      });
+      $("d-cvc").addEventListener("input", e => e.target.value = e.target.value.replace(/\D/g, "").slice(0, 4));
+      $("d-zip").addEventListener("input", e => e.target.value = e.target.value.replace(/\D/g, "").slice(0, 5));
+      dlg.querySelectorAll("[data-fill]").forEach(c => c.addEventListener("click", () => {
+        if (steps[1].hidden) return;
+        const f = $("d-card"); f.value = c.dataset.fill; f.dispatchEvent(new Event("input"));
+        if (!$("d-exp").value) { $("d-exp").value = "12 / " + String((new Date().getFullYear() + 3) % 100).padStart(2, "0"); }
+        if (!$("d-cvc").value) $("d-cvc").value = brandOf(c.dataset.fill) === "amex" ? "1234" : "123";
+        if (!$("d-zip").value) $("d-zip").value = "60030";
+      }));
+
+      function validate() {
+        const errs = {};
+        const name = $("d-name").value.trim(), email = $("d-email").value.trim();
+        const card = $("d-card").value.replace(/\D/g, ""), exp = $("d-exp").value.replace(/\D/g, ""), cvc = $("d-cvc").value, zip = $("d-zip").value;
+        if (name.length < 2) errs.name = "Enter the name on the card.";
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) errs.email = "Enter a valid email address.";
+        if (card.length < 15) errs.card = "Enter the full card number.";
+        else if (!TEST[card]) errs.card = "Demo mode only accepts test cards. Use 4242 4242 4242 4242.";
+        const mm = +exp.slice(0, 2), yy = +exp.slice(2, 4), now = new Date();
+        if (exp.length !== 4 || mm < 1 || mm > 12) errs.exp = "Use MM / YY.";
+        else if (2000 + yy < now.getFullYear() || (2000 + yy === now.getFullYear() && mm < now.getMonth() + 1)) errs.exp = "This card has expired.";
+        const need = brandOf(card) === "amex" ? 4 : 3;
+        if (cvc.length !== need) errs.cvc = need + " digits.";
+        if (zip.length !== 5) errs.zip = "5-digit ZIP.";
+        ["name", "email", "card", "exp", "cvc", "zip"].forEach(k => {
+          $("e-" + k).textContent = errs[k] || "";
+          errs[k] ? $("d-" + k).setAttribute("aria-invalid", "true") : $("d-" + k).removeAttribute("aria-invalid");
+        });
+        const firstBad = ["name", "email", "card", "exp", "cvc", "zip"].find(k => errs[k]);
+        if (firstBad) $("d-" + firstBad).focus();
+        return !firstBad && { name, email, card };
+      }
+
+      $("pay-form").addEventListener("submit", e => {
+        e.preventDefault();
+        $("form-alert").textContent = "";
+        const ok = validate(); if (!ok) return;
+        const btn = $("pay-btn");
+        btn.disabled = true; btn.innerHTML = '<span class="spinner" aria-hidden="true"></span> Processing…';
+        setTimeout(() => {
+          btn.disabled = false; btn.textContent = payLabel();
+          if (TEST[ok.card] === "decline") {
+            $("form-alert").textContent = "Your card was declined. Try a different card.";
+            $("d-card").setAttribute("aria-invalid", "true"); $("d-card").focus();
+            return;
+          }
+          const brand = ({ visa: "Visa", mastercard: "Mastercard", amex: "Amex", discover: "Discover" })[brandOf(ok.card)];
+          const first = ok.name.split(/\s+/)[0];
+          $("r-first").textContent = ", " + first;
+          $("r-line").textContent = "Your " + (state.freq === "monthly" ? "monthly" : "one-time") + " gift of " + money(state.amount) + " was accepted. A receipt would go to " + ok.email + ".";
+          $("r-id").textContent = "LCTC-" + Math.random().toString(36).slice(2, 8).toUpperCase();
+          $("r-amt").textContent = money(state.amount) + (state.freq === "monthly" ? " / month" : "");
+          $("r-fund").textContent = $("d-fund").value;
+          $("r-card").textContent = brand + " ending " + ok.card.slice(-4);
+          $("r-date").textContent = new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+          ["d-card", "d-exp", "d-cvc"].forEach(id => $(id).value = "");
+          show(3);
+          setTimeout(() => {
+            const fx = burst();
+            if (!fx) return;
+            const fire = o => fx(Object.assign({ colors: [...palette, "#ffd166"] }, o));
+            fire({ particleCount: reduce ? 60 : 160, spread: 100, startVelocity: 50, origin: { y: .55 } });
+            if (!reduce) setTimeout(() => {
+              fire({ particleCount: 90, angle: 60, spread: 70, origin: { x: 0, y: .8 } });
+              fire({ particleCount: 90, angle: 120, spread: 70, origin: { x: 1, y: .8 } });
+            }, 250);
+          }, 350);
+        }, 1700);
+      });
+    })();
+
+    // Copy helpers
+    async function copy(text, done) {
+      try { await navigator.clipboard.writeText(text); say(done); }
+      catch { say(text); }
+    }
+    document.querySelectorAll("[data-copy]").forEach(b => b.addEventListener("click", () => copy(b.dataset.copy, "Email copied")));
+    document.querySelector("[data-share]").addEventListener("click", () => copy(location.href.split("#")[0], "Link copied. Thanks for sharing!"));
+
+    document.getElementById("yr").textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>
