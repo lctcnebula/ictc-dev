@@ -41,7 +41,7 @@ export default function ApplyForm() {
 
   function goTo(n: number) {
     setStep(n);
-    top.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    top.current?.scrollIntoView({ block: "start" });
   }
 
   function next() {
@@ -64,7 +64,7 @@ export default function ApplyForm() {
       localStorage.removeItem(DRAFT_KEY);
     } catch {}
     setDone(app);
-    top.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    top.current?.scrollIntoView({ block: "start" });
     const fx = await getConfetti();
     fx?.({ particleCount: 140, spread: 90, origin: { y: .4 }, colors: ["#015998", "#ff8a3d", "#5fa8e0", "#ffffff"] });
   }

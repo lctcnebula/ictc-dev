@@ -58,6 +58,11 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     say("🎉 Here's to Lake County students!");
   }, [getConfetti, say]);
 
+  // Every new page opens at the top, instantly (no animated scroll from where you clicked).
+  useEffect(() => {
+    if (!location.hash) window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [pathname]);
+
   // Reveal-on-scroll for any element with .reveal, re-run on each route change.
   useEffect(() => {
     document.documentElement.classList.add("js");

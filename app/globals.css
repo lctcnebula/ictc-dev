@@ -19,7 +19,7 @@
   --ease: cubic-bezier(.2, .7, .2, 1);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+html { scroll-padding-top: 90px; }
 body { font-family: var(--body); color: var(--ink); background: var(--paper); line-height: 1.65; -webkit-font-smoothing: antialiased; }
 img { max-width: 100%; height: auto; display: block; }
 a { color: inherit; }
@@ -495,7 +495,6 @@ footer.site { background: var(--blue-night); color: rgba(255,255,255,.72); paddi
   .row3 .field:first-child { grid-column: 1 / -1; }
 }
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
   .slide, .slide img, .card, .card .media img, .btn, .toast, .path, .ticker-track { transition: none; animation: none; }
   .slide img { transform: none; }
   .dot.active::after { animation: none; transform: scaleX(1); }

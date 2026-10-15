@@ -54,7 +54,7 @@ export default function DonateCheckout() {
   useEffect(() => {
     if (first.current) { first.current = false; return; }
     const r = top.current?.getBoundingClientRect();
-    if (r && r.top < 80) top.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (r && r.top < 80) top.current?.scrollIntoView({ block: "start" });
     if (step === 2) setTimeout(() => document.getElementById("d-name")?.focus(), 50);
   }, [step]);
 
