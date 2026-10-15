@@ -3,8 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { palette, useSite } from "./Providers";
 import { ConfettiButton } from "./Actions";
+import { insert, money, now } from "@/lib/store";
+import { useUser } from "@/lib/auth";
 
-// Demo checkout only: nothing is charged, sent or stored. Swap the submit handler for
+// Demo checkout: nothing is charged, but every completed gift is recorded in Admin → Donations. Swap the submit handler for
 // a hosted payment page (Stripe Payment Links, PayPal...) to take real gifts. No upper limit on gift size.
 
 export const funds = ["Where it's needed most", "Scholarships", "Student grants", "Tools & Equipment", "Certifications"];
@@ -13,7 +15,6 @@ const TEST: Record<string, "ok" | "decline"> = { "4242424242424242": "ok", "5555
 const brandNames = { visa: "Visa", mastercard: "Mastercard", amex: "Amex", discover: "Discover" } as const;
 type Brand = keyof typeof brandNames | "";
 
-const money = (n: number) => "$" + n.toLocaleString("en-US", { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 });
 const brandOf = (d: string): Brand => /^4/.test(d) ? "visa" : /^(5[1-5]|2[2-7])/.test(d) ? "mastercard" : /^3[47]/.test(d) ? "amex" : /^6(011|5)/.test(d) ? "discover" : "";
 const formatCard = (raw: string) => {
   const d = raw.replace(/\D/g, "").slice(0, 16), b = brandOf(d), dd = d.slice(0, b === "amex" ? 15 : 16);
@@ -43,6 +44,12 @@ export default function DonateCheckout() {
   const [alert, setAlert] = useState("");
   const [busy, setBusy] = useState(false);
   const [receipt, setReceipt] = useState<Receipt | null>(null);
+
+  // Signed-in members get their name and email filled in, so the gift shows in their account.
+  const { user } = useUser();
+  useEffect(() => {
+    if (user) setF(p => ({ ...p, name: p.name || user.name, email: p.email || user.email }));
+  }, [user]);
 
   // Buttons elsewhere link to /donate?fund=Scholarships to preselect where the gift goes.
   useEffect(() => {
@@ -115,10 +122,12 @@ export default function DonateCheckout() {
         return;
       }
       const b = brandOf(card) as keyof typeof brandNames;
+      const id = "LCTC-" + Math.random().toString(36).slice(2, 8).toUpperCase();
+      insert("donations", { receipt: id, name: f.name.trim(), email: f.email.trim(), amount, freq, fund: designation, card: `${brandNames[b]} ending ${card.slice(-4)}`, createdAt: now() });
       setReceipt({
         first: f.name.trim().split(/\s+/)[0],
         line: `Your ${per ? "monthly" : "one-time"} gift of ${money(amount)} was accepted. A receipt would go to ${f.email.trim()}.`,
-        id: "LCTC-" + Math.random().toString(36).slice(2, 8).toUpperCase(),
+        id,
         amt: money(amount) + (per ? " / month" : ""),
         fund: designation,
         card: `${brandNames[b]} ending ${card.slice(-4)}`,
@@ -156,7 +165,7 @@ export default function DonateCheckout() {
       <div>
         <p className="demo-note" role="note">
           <span aria-hidden="true">⚠️</span>
-          <span><b>Demo mode.</b> No card is charged and nothing is sent or saved. Use test card <code title="Click to fill" onClick={() => fill("4242424242424242")}>4242 4242 4242 4242</code> with any future date and any CVC. <code title="Click to fill" onClick={() => fill("4000000000000002")}>4000 0000 0000 0002</code> shows a decline.</span>
+          <span><b>Demo mode.</b> No card is charged. Completed gifts show up in the admin dashboard. Use test card <code title="Click to fill" onClick={() => fill("4242424242424242")}>4242 4242 4242 4242</code> with any future date and any CVC. <code title="Click to fill" onClick={() => fill("4000000000000002")}>4000 0000 0000 0002</code> shows a decline.</span>
         </p>
         <ol className="steps" aria-hidden="true">{[1, 2, 3].map(n => <li key={n} className={n <= step ? "on" : ""} />)}</ol>
 

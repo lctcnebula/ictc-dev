@@ -1,4 +1,7 @@
-import { grantTypes, memberSchools, programs } from "./content";
+import { grantTypes } from "./content";
+
+// Member schools and programs are edited in the admin dashboard, so callers pass the current lists in.
+export type Lists = { schools: string[]; programs: { slug: string; name: string }[] };
 
 // Validation and formatting for the student grant application. Runs entirely in the browser.
 
@@ -51,7 +54,7 @@ export const stepFields: (keyof ApplicationInput)[][] = [
   ["certify", "consent"],
 ];
 
-export function validate(a: ApplicationInput, fields?: (keyof ApplicationInput)[]): Errors {
+export function validate(a: ApplicationInput, lists: Lists, fields?: (keyof ApplicationInput)[]): Errors {
   const e: Errors = {};
   const s = (v: unknown) => (typeof v === "string" ? v.trim() : "");
   if (s(a.firstName).length < 1) e.firstName = "Enter your first name.";
@@ -59,8 +62,8 @@ export function validate(a: ApplicationInput, fields?: (keyof ApplicationInput)[
   if (!emailRe.test(s(a.email))) e.email = "Enter a valid email address.";
   if (s(a.phone) && s(a.phone).replace(/\D/g, "").length < 10) e.phone = "Enter a 10-digit phone number.";
   if (!grades.includes(a.grade)) e.grade = "Choose your grade.";
-  if (!memberSchools.includes(a.school) && a.school !== "Other") e.school = "Choose your home high school.";
-  if (!programs.some(p => p.slug === a.program)) e.program = "Choose your Tech Campus program.";
+  if (!lists.schools.includes(a.school) && a.school !== "Other") e.school = "Choose your home high school.";
+  if (!lists.programs.some(p => p.slug === a.program)) e.program = "Choose your Tech Campus program.";
   if (!programYears.includes(a.programYear)) e.programYear = "Choose your year in the program.";
   if (!grantTypes.some(g => g.id === a.grantType)) e.grantType = "Choose what you're applying for.";
   if (s(a.amount)) {
@@ -82,8 +85,8 @@ export function validate(a: ApplicationInput, fields?: (keyof ApplicationInput)[
   return Object.fromEntries(Object.entries(e).filter(([k]) => fields.includes(k as keyof ApplicationInput)));
 }
 
-// Plain-text version of a finished application, used for the email and the downloadable copy.
-export function toText(a: Application) {
+// Plain-text version of a finished application, used for the downloadable copy.
+export function toText(a: Application, programs: Lists["programs"] = []) {
   const program = programs.find(p => p.slug === a.program)?.name ?? a.program;
   const grant = grantTypes.find(g => g.id === a.grantType)?.name ?? a.grantType;
   const lines: [string, string][] = [

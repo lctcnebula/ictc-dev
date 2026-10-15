@@ -1,19 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { site, upcomingEvents } from "@/lib/content";
+import { upcoming, useData } from "@/lib/store";
 import EventCard from "./EventCard";
 
-// The page is built once, so re-check dates in the visitor's browser: past events drop off with no rebuild.
 export function useUpcomingEvents() {
-  const [list, setList] = useState(() => upcomingEvents());
-  useEffect(() => setList(upcomingEvents()), []);
-  return list;
+  return upcoming(useData("events"));
 }
 
 export default function UpcomingEvents({ limit }: { limit?: number }) {
   const events = useUpcomingEvents().slice(0, limit);
-  if (!events.length)
-    return <p className="empty">No upcoming events right now. Check the <a href={site.calendarUrl} target="_blank" rel="noopener">campus calendar</a>.</p>;
-  return <div className="grid three">{events.map(e => <EventCard key={e.date + e.title} e={e} />)}</div>;
+  if (!events.length) return <p className="empty">No upcoming events right now. Subscribe below and we&apos;ll let you know when the next one is announced.</p>;
+  return <div className="grid three">{events.map(e => <EventCard key={e.id} e={e} />)}</div>;
 }

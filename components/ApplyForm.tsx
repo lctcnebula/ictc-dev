@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { grantTypes, memberSchools, programs, site } from "@/lib/content";
+import { grantTypes } from "@/lib/content";
+import { insert, useData } from "@/lib/store";
 import {
   ESSAY_MIN_WORDS, emptyApplication, grades, plansOptions, programYears, stepFields, toText, validate, wordCount,
   type Application, type ApplicationInput, type Errors,
@@ -9,7 +10,6 @@ import {
 import { useSite } from "./Providers";
 
 const DRAFT_KEY = "lctc-grant-draft";
-const SUBMITTED_KEY = "lctc-grant-submitted";
 const STEPS = ["About you", "Your request", "Your story", "Review"];
 
 export default function ApplyForm() {
@@ -20,6 +20,9 @@ export default function ApplyForm() {
   const loaded = useRef(false);
   const top = useRef<HTMLDivElement>(null);
   const { getConfetti } = useSite();
+  const programs = useData("programs");
+  const schools = useData("settings").schools;
+  const lists = { schools, programs };
 
   // Restore a saved draft (and ?program= from a program page), then keep saving as the student types.
   useEffect(() => {
@@ -45,7 +48,7 @@ export default function ApplyForm() {
   }
 
   function next() {
-    const e = validate(a, stepFields[step]);
+    const e = validate(a, lists, stepFields[step]);
     setErrors(e);
     const first = stepFields[step].find(k => e[k]);
     if (first) { document.getElementById("f-" + first)?.focus(); return; }
@@ -53,16 +56,14 @@ export default function ApplyForm() {
   }
 
   async function submit() {
-    const e = validate(a);
+    const e = validate(a, lists);
     setErrors(e);
     const bad = stepFields.findIndex(fs => fs.some(k => e[k]));
     if (bad >= 0) { if (bad !== step) goTo(bad); return; }
     const app: Application = { ...a, id: "LCTC-G-" + Math.random().toString(36).slice(2, 8).toUpperCase(), submittedAt: new Date().toISOString() };
-    try {
-      const list = JSON.parse(localStorage.getItem(SUBMITTED_KEY) || "[]");
-      localStorage.setItem(SUBMITTED_KEY, JSON.stringify([...list, app]));
-      localStorage.removeItem(DRAFT_KEY);
-    } catch {}
+    // Goes straight to Admin → Applications.
+    insert("applications", { ...app, status: "New" });
+    try { localStorage.removeItem(DRAFT_KEY); } catch {}
     setDone(app);
     top.current?.scrollIntoView({ block: "start" });
     const fx = await getConfetti();
@@ -70,7 +71,7 @@ export default function ApplyForm() {
   }
 
   function download(app: Application) {
-    const url = URL.createObjectURL(new Blob([toText(app)], { type: "text/plain" }));
+    const url = URL.createObjectURL(new Blob([toText(app, programs)], { type: "text/plain" }));
     Object.assign(document.createElement("a"), { href: url, download: `${app.id}.txt` }).click();
     URL.revokeObjectURL(url);
   }
@@ -106,18 +107,16 @@ export default function ApplyForm() {
   const grant = grantTypes.find(g => g.id === a.grantType);
 
   if (done) {
-    const mail = `mailto:${site.email}?subject=${encodeURIComponent(`Grant application ${done.id}: ${done.firstName} ${done.lastName}`)}&body=${encodeURIComponent(toText(done))}`;
     return (
       <div className="form-card done-box" ref={top} aria-live="polite">
         <svg className="check" viewBox="0 0 84 84" aria-hidden="true"><circle cx="42" cy="42" r="36" /><path d="m28 43 10 10 18-20" /></svg>
-        <p className="pill-ok">Application ready</p>
-        <h2 className="form-title">One last step, {done.firstName}!</h2>
-        <p className="form-sub" style={{ marginBottom: 0 }}>Your application for a <b>{grant?.name.toLowerCase()}</b> is complete. Your confirmation number:</p>
+        <p className="pill-ok">Application received</p>
+        <h2 className="form-title">Thank you, {done.firstName}!</h2>
+        <p className="form-sub" style={{ marginBottom: 0 }}>Your application for a <b>{grant?.name.toLowerCase()}</b> has been sent to the Foundation. Your confirmation number:</p>
         <p className="conf-id">{done.id}</p>
-        <p className="form-sub">Send it to the Foundation at <b>{site.email}</b>. The button below opens your email with everything filled in. Just press send. If email doesn&apos;t open, download a copy and attach it, or print it and hand it to Student Services.</p>
+        <p className="form-sub">Keep this number for your records. The Foundation reviews every application and will email you with a decision. You can download or print a copy below.</p>
         <div className="done-actions">
-          <a className="btn blue" href={mail}>Email my application</a>
-          <button className="btn line" type="button" onClick={() => download(done)}>Download a copy</button>
+          <button className="btn blue" type="button" onClick={() => download(done)}>Download a copy</button>
           <button className="btn line" type="button" onClick={() => window.print()}>Print</button>
         </div>
         <p style={{ marginTop: 18 }}><button className="back" type="button" onClick={startOver}>Start another application</button></p>
@@ -147,7 +146,7 @@ export default function ApplyForm() {
             </div>
             <div className="row2">
               {select("grade", "Grade", opts(grades))}
-              {select("school", "Home high school", [...opts(memberSchools), { value: "Other", label: "Other" }])}
+              {select("school", "Home high school", [...opts(schools), { value: "Other", label: "Other" }])}
             </div>
             <div className="row2">
               {select("program", "Tech Campus program", programs.map(p => ({ value: p.slug, label: p.name })))}
@@ -247,7 +246,7 @@ export default function ApplyForm() {
 
         <div className="form-nav">
           {step > 0 ? <button className="btn line" type="button" onClick={() => goTo(step - 1)}>← Back</button> : <span className="hint" style={{ alignSelf: "center" }}>Your progress saves on this device.</span>}
-          <button className="btn blue" type="submit">{step < 3 ? "Continue →" : "Finish application"}</button>
+          <button className="btn blue" type="submit">{step < 3 ? "Continue →" : "Submit application"}</button>
         </div>
       </form>
     </div>

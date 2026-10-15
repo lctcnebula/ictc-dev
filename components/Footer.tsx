@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { photoCredits, site } from "@/lib/content";
+import { ContactDetails } from "./Live";
 
 export default function Footer() {
   return (
@@ -16,27 +17,25 @@ export default function Footer() {
               <li><Link href="/about">About</Link></li>
               <li><Link href="/programs">Programs</Link></li>
               <li><Link href="/events">Events</Link></li>
+              <li><Link href="/blog">Blog</Link></li>
               <li><Link href="/get-involved">Get involved</Link></li>
               <li><Link href="/donate">Donate</Link></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Foundation</h4>
+            <ul>
+              <li><Link href="/board">Board of directors</Link></li>
+              <li><Link href="/impact">Yearly impact</Link></li>
+              <li><Link href="/alumni">Alumni</Link></li>
+              <li><Link href="/apply">Apply for a grant</Link></li>
               <li><Link href="/contact">Contact</Link></li>
             </ul>
           </div>
           <div>
-            <h4>Students</h4>
-            <ul>
-              <li><Link href="/apply">Apply for a grant</Link></li>
-              <li><Link href="/apply#outside-scholarships">Outside scholarships</Link></li>
-              <li><a href={site.enrollUrl} target="_blank" rel="noopener">How to enroll</a></li>
-            </ul>
-          </div>
-          <div>
             <h4>Contact</h4>
-            <ul>
-              <li>{site.address}</li>
-              <li><a href={site.phoneHref}>{site.phone}</a></li>
-              <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
-              <li><a href={site.campusUrl} target="_blank" rel="noopener">techcampus.org</a></li>
-            </ul>
+            <ContactDetails className="foot-contact" />
+            <p style={{ marginTop: 16 }}><Link href="/login">Sign in →</Link></p>
           </div>
         </div>
 
@@ -51,7 +50,7 @@ export default function Footer() {
 
         <div className="fine">
           <span>© {new Date().getFullYear()} {site.name}</span>
-          <span>Grayslake, Illinois</span>
+          <span><Link href="/sitemap.xml">Sitemap</Link></span>
         </div>
       </div>
     </footer>

@@ -63,18 +63,24 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     if (!location.hash) window.scrollTo({ top: 0, left: 0, behavior: "instant" });
   }, [pathname]);
 
-  // Reveal-on-scroll for any element with .reveal, re-run on each route change.
+  // Reveal-on-scroll for any element with .reveal, including ones rendered later from stored data.
   useEffect(() => {
     document.documentElement.classList.add("js");
     const io = new IntersectionObserver(es => es.forEach(e => {
       if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
     }), { rootMargin: "0px 0px -8% 0px" });
-    document.querySelectorAll<HTMLElement>(".reveal:not(.in)").forEach(el => {
+    const seen = new WeakSet<Element>();
+    const scan = () => document.querySelectorAll<HTMLElement>(".reveal:not(.in)").forEach(el => {
+      if (seen.has(el)) return;
+      seen.add(el);
       const inGrid = el.parentElement?.classList.contains("grid");
       el.style.transitionDelay = (inGrid ? [...el.parentElement!.children].indexOf(el) * 90 : 0) + "ms";
       io.observe(el);
     });
-    return () => io.disconnect();
+    scan();
+    const mo = new MutationObserver(scan);
+    mo.observe(document.body, { childList: true, subtree: true });
+    return () => { io.disconnect(); mo.disconnect(); };
   }, [pathname]);
 
   const site: Site = { say, throwConfetti, getConfetti };

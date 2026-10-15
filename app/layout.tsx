@@ -1,8 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Barlow_Condensed, Plus_Jakarta_Sans } from "next/font/google";
 import Providers from "@/components/Providers";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import "./globals.css";
 
 const display = Barlow_Condensed({ subsets: ["latin"], weight: ["600", "800"], style: ["italic"], variable: "--font-display" });
@@ -23,12 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${display.variable} ${body.variable}`}>
       <body>
-        <a className="skip" href="#main">Skip to content</a>
-        <Providers>
-          <Header />
-          <main id="main">{children}</main>
-          <Footer />
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
