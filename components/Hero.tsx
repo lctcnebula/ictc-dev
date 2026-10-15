@@ -49,7 +49,7 @@ export default function Hero() {
             </div>
           </div>
           {nextEvent && (
-            <Link className="next-up" href="/#events">
+            <Link className="next-up" href="/events">
               <small>Next on campus</small>
               <b>{nextEvent.title}</b>
               <span>{nextEvent.when}</span>

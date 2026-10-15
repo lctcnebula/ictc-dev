@@ -1,12 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { useSite } from "./Providers";
 
 type Btn = { className?: string; children: React.ReactNode };
 
 export function DonateButton({ className = "btn solid", fund, children }: Btn & { fund?: string }) {
-  const { openDonate } = useSite();
-  return <button className={className} type="button" onClick={() => openDonate(fund)}>{children}</button>;
+  return <Link className={className} href={fund ? `/donate?fund=${encodeURIComponent(fund)}` : "/donate"}>{children}</Link>;
 }
 
 export function ConfettiButton({ className = "btn ghost", children }: Btn) {

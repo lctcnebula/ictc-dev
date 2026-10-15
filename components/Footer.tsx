@@ -13,10 +13,12 @@ export default function Footer() {
           <div>
             <h4>Explore</h4>
             <ul>
-              <li><Link href="/#what-we-do">What we do</Link></li>
+              <li><Link href="/about">About</Link></li>
               <li><Link href="/programs">Programs</Link></li>
-              <li><Link href="/#events">Events</Link></li>
-              <li><Link href="/#who-we-are">Who we are</Link></li>
+              <li><Link href="/events">Events</Link></li>
+              <li><Link href="/get-involved">Get involved</Link></li>
+              <li><Link href="/donate">Donate</Link></li>
+              <li><Link href="/contact">Contact</Link></li>
             </ul>
           </div>
           <div>

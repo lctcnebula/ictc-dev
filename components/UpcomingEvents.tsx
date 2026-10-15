@@ -11,8 +11,8 @@ export function useUpcomingEvents() {
   return list;
 }
 
-export default function UpcomingEvents() {
-  const events = useUpcomingEvents();
+export default function UpcomingEvents({ limit }: { limit?: number }) {
+  const events = useUpcomingEvents().slice(0, limit);
   if (!events.length)
     return <p className="empty">No upcoming events right now. Check the <a href={site.calendarUrl} target="_blank" rel="noopener">campus calendar</a>.</p>;
   return <div className="grid three">{events.map(e => <EventCard key={e.date + e.title} e={e} />)}</div>;

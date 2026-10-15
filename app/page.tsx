@@ -1,12 +1,15 @@
 import Link from "next/link";
 import Hero from "@/components/Hero";
 import Stats from "@/components/Stats";
-import ProgramExplorer from "@/components/ProgramExplorer";
 import UpcomingEvents from "@/components/UpcomingEvents";
-import { ConfettiButton, CopyButton, DonateButton, ShareButton } from "@/components/Actions";
-import { grantTypes, memberSchools, programs, site } from "@/lib/content";
+import GiveCta from "@/components/GiveCta";
+import { DonateButton } from "@/components/Actions";
+import { categories, grantTypes, memberSchools, programs, site } from "@/lib/content";
+
+const featured = ["welding-fabrication", "certified-nurse-assisting", "culinary-arts", "cybersecurity", "cosmetology", "firefighting"];
 
 export default function Home() {
+  const label = (id: string) => categories.find(c => c.id === id)?.label;
   return (
     <>
       <Hero />
@@ -23,10 +26,11 @@ export default function Home() {
         <div className="wrap">
           <h2>Creating bright futures for students and families in Lake County</h2>
           <p>Students from {memberSchools.length} high schools across Lake and McHenry Counties spend part of every school day at Tech Campus, learning a trade on real equipment. The Foundation makes sure cost never decides who gets to finish.</p>
+          <p style={{ marginTop: 18 }}><Link className="text-link" href="/about">More about the Foundation →</Link></p>
         </div>
       </section>
 
-      <section className="block" id="what-we-do">
+      <section className="block">
         <div className="wrap">
           <div className="head reveal">
             <div>
@@ -87,17 +91,24 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="block tint" id="programs">
+      <section className="block tint">
         <div className="wrap">
           <div className="head reveal">
             <div>
               <p className="kicker">The programs you support</p>
               <h2>{programs.length} career pathways</h2>
-              <p>Every program pairs classroom learning with real equipment and industry standards. Students can also earn over 100 college credits through dual credit with the College of Lake County and McHenry County College.</p>
+              <p>Every program pairs classroom learning with real equipment and industry standards, plus over 100 college credits available through dual credit.</p>
             </div>
-            <Link className="text-link" href="/programs">See all programs →</Link>
+            <Link className="text-link" href="/programs">See all {programs.length} programs →</Link>
           </div>
-          <ProgramExplorer />
+          <div className="paths">
+            {featured.map(slug => programs.find(p => p.slug === slug)!).map(p => (
+              <Link key={p.slug} className="path" href={`/programs/${p.slug}`}>
+                <i aria-hidden="true">{p.icon}</i>
+                <div><small>{label(p.cat)}</small><b>{p.name}</b><span>{p.summary}</span></div>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -109,38 +120,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="block" id="ways-to-help">
-        <div className="wrap">
-          <div className="head reveal">
-            <div>
-              <p className="kicker">Ways to help</p>
-              <h2>Brighter futures start with you</h2>
-              <p>Give your time, your expertise or your company&apos;s support. Pick the way that fits and we&apos;ll take it from there.</p>
-            </div>
-            <a className="text-link" href="#contact">Contact the Foundation →</a>
-          </div>
-          <div className="grid four">
-            <article className="card reveal">
-              <div className="media"><img src="/assets/img/mentoring.jpg" alt="A mentor helping students working on laptops" width={1024} height={683} loading="lazy" /></div>
-              <div className="content"><h3>Mentor a student</h3><p>Share what your career is really like through mock interviews, job shadows and classroom visits.</p><a className="more" href="#contact">Volunteer</a></div>
-            </article>
-            <article className="card reveal">
-              <div className="media"><img src="/assets/img/auto.jpg" alt="Students working underneath a car on a lift" width={1024} height={683} loading="lazy" /></div>
-              <div className="content"><h3>Partner as a business</h3><p>Offer internships, host a site visit or hire graduates who arrive certified and ready.</p><a className="more" href={site.internshipUrl} target="_blank" rel="noopener">Offer an internship</a></div>
-            </article>
-            <article className="card reveal">
-              <div className="media"><img src="/assets/img/catering.jpg" alt="Three culinary students in chef coats serving at an event" width={1024} height={732} loading="lazy" /></div>
-              <div className="content"><h3>Donate equipment</h3><p>Have tools, materials or equipment a program could use? Tell Tech Campus what you&apos;d like to give.</p><a className="more" href={site.itemDonationUrl} target="_blank" rel="noopener">Donate items</a></div>
-            </article>
-            <article className="card reveal">
-              <div className="media"><img src="/assets/img/salon.jpg" alt="Cosmetology students laughing while giving manicures" width={1024} height={729} loading="lazy" /></div>
-              <div className="content"><h3>Spread the word</h3><p>Tell a student, parent or employer about Tech Campus. Every introduction counts.</p><ShareButton className="more">Copy site link</ShareButton></div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section className="block tint" id="events">
+      <section className="block">
         <div className="wrap">
           <div className="head reveal">
             <div>
@@ -148,42 +128,16 @@ export default function Home() {
               <h2>We are stronger together</h2>
               <p>Come see the campus, meet the students and celebrate the people who make it work.</p>
             </div>
-            <a className="text-link" href={site.calendarUrl} target="_blank" rel="noopener">Full campus calendar →</a>
+            <Link className="text-link" href="/events">All events →</Link>
           </div>
-          <UpcomingEvents />
+          <UpcomingEvents limit={3} />
         </div>
       </section>
 
-      <section className="block" id="who-we-are">
+      <section className="block" style={{ paddingTop: 0 }}>
         <div className="wrap">
-          <div className="cta reveal">
-            <div>
-              <h2>Every gift counts, any size</h2>
-              <p>Your gift puts scholarships, tools and certifications in the hands of Lake County students. Give once or monthly, and every gift gets a little confetti.</p>
-            </div>
-            <div className="hero-actions" style={{ marginTop: 0 }}>
-              <DonateButton className="btn solid">Make your gift today</DonateButton>
-              <ConfettiButton>Throw confetti 🎉</ConfettiButton>
-            </div>
-          </div>
-
-          <div className="split" style={{ marginTop: "clamp(80px, 10vw, 120px)" }}>
-            <div className="copy reveal">
-              <p className="kicker">Who we are</p>
-              <h2>A foundation for the careers Lake County runs on</h2>
-              <p>The <strong>{site.name}</strong> supports students at Lake County Tech Campus in Grayslake, &quot;{site.motto}&quot;</p>
-              <p>Tech Campus is the largest secondary career and technical education system in Illinois. More than 2,500 students from {memberSchools.length} member high schools in Lake and McHenry Counties train here in {programs.length} programs, three sessions a day, earning certifications and free college credit before they graduate.</p>
-              <p>We&apos;d love to hear from you, whether you want to mentor, partner or simply learn more.</p>
-            </div>
-            <div className="stack reveal">
-              <div className="big"><img src="/assets/img/welding.jpg" alt="A welding student at work in the shop" width={1024} height={683} loading="lazy" /></div>
-              <dl className="contact-card" id="contact">
-                <div><dt>Email</dt><dd><a href={`mailto:${site.email}`}>{site.email}</a><CopyButton text={site.email} /></dd></div>
-                <div><dt>Phone</dt><dd><a href={site.phoneHref}>{site.phone}</a></dd></div>
-                <div><dt>Visit</dt><dd>{site.address}</dd></div>
-              </dl>
-            </div>
-          </div>
+          <GiveCta />
+          <p style={{ textAlign: "center", marginTop: 28 }}><Link className="text-link" href="/get-involved">More ways to help →</Link></p>
         </div>
       </section>
     </>

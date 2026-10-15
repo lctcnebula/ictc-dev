@@ -5,9 +5,9 @@ import { palette, useSite } from "./Providers";
 import { ConfettiButton } from "./Actions";
 
 // Demo checkout only: nothing is charged, sent or stored. Swap the submit handler for
-// Stripe (or your processor) to take real gifts. There is no upper limit on gift size.
+// a hosted payment page (Stripe Payment Links, PayPal...) to take real gifts. No upper limit on gift size.
 
-const funds = ["Where it's needed most", "Scholarships", "Student grants", "Tools & Equipment", "Certifications"];
+export const funds = ["Where it's needed most", "Scholarships", "Student grants", "Tools & Equipment", "Certifications"];
 const presets = [25, 50, 100, 250, 500, 1000];
 const TEST: Record<string, "ok" | "decline"> = { "4242424242424242": "ok", "5555555555554444": "ok", "378282246310005": "ok", "6011111111111117": "ok", "4000000000000002": "decline" };
 const brandNames = { visa: "Visa", mastercard: "Mastercard", amex: "Amex", discover: "Discover" } as const;
@@ -29,9 +29,8 @@ const blank = { name: "", email: "", card: "", exp: "", cvc: "", zip: "" };
 type Fields = typeof blank;
 type Receipt = { first: string; line: string; id: string; amt: string; fund: string; card: string; date: string };
 
-export default function DonateModal({ fund, onClose }: { fund: string | null; onClose: () => void }) {
-  const ref = useRef<HTMLDialogElement>(null);
-  const bodyRef = useRef<HTMLDivElement>(null);
+export default function DonateCheckout() {
+  const top = useRef<HTMLDivElement>(null);
   const { getConfetti } = useSite();
   const [step, setStep] = useState(1);
   const [amount, setAmount] = useState(50);
@@ -45,18 +44,24 @@ export default function DonateModal({ fund, onClose }: { fund: string | null; on
   const [busy, setBusy] = useState(false);
   const [receipt, setReceipt] = useState<Receipt | null>(null);
 
+  // Buttons elsewhere link to /donate?fund=Scholarships to preselect where the gift goes.
   useEffect(() => {
-    const dlg = ref.current;
-    if (!dlg) return;
-    if (fund !== null && !dlg.open) {
-      setStep(1); setAmount(50); setCustom(""); setFreq("once"); setAmountErr("");
-      setDesignation(funds.includes(fund) ? fund : funds[0]);
-      setF(blank); setErrs({}); setAlert(""); setReceipt(null);
-      dlg.showModal();
-    } else if (fund === null && dlg.open) dlg.close();
-  }, [fund]);
+    const q = new URLSearchParams(location.search).get("fund");
+    if (q && funds.includes(q)) setDesignation(q);
+  }, []);
 
-  useEffect(() => { bodyRef.current?.scrollTo(0, 0); if (step === 2) setTimeout(() => document.getElementById("d-name")?.focus(), 50); }, [step]);
+  const first = useRef(true);
+  useEffect(() => {
+    if (first.current) { first.current = false; return; }
+    const r = top.current?.getBoundingClientRect();
+    if (r && r.top < 80) top.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (step === 2) setTimeout(() => document.getElementById("d-name")?.focus(), 50);
+  }, [step]);
+
+  function reset() {
+    setStep(1); setAmount(50); setCustom(""); setFreq("once"); setAmountErr("");
+    setF(blank); setErrs({}); setAlert(""); setReceipt(null);
+  }
 
   const per = freq === "monthly";
   const brand = brandOf(f.card.replace(/\D/g, ""));
@@ -147,15 +152,8 @@ export default function DonateModal({ fund, onClose }: { fund: string | null; on
   );
 
   return (
-    <dialog className="donate-modal" ref={ref} aria-labelledby="dm-title" onClose={onClose} onClick={e => { if (e.target === ref.current) onClose(); }}>
-      <canvas className="dm-confetti" aria-hidden="true" />
-      <div className="dm-head">
-        <img src="/assets/logo.png" alt="LCTC Foundation" width={1781} height={483} />
-        <button className="x" type="button" onClick={onClose} aria-label="Close">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M6 6l12 12M18 6 6 18" /></svg>
-        </button>
-      </div>
-      <div className="dm-body" ref={bodyRef}>
+    <div className="form-card donate-card" ref={top}>
+      <div>
         <p className="demo-note" role="note">
           <span aria-hidden="true">⚠️</span>
           <span><b>Demo mode.</b> No card is charged and nothing is sent or saved. Use test card <code title="Click to fill" onClick={() => fill("4242424242424242")}>4242 4242 4242 4242</code> with any future date and any CVC. <code title="Click to fill" onClick={() => fill("4000000000000002")}>4000 0000 0000 0002</code> shows a decline.</span>
@@ -242,13 +240,13 @@ export default function DonateModal({ fund, onClose }: { fund: string | null; on
             </dl>
             <p className="dm-sub" style={{ fontSize: ".78rem" }}>This is a demo receipt. No money was charged and no email was sent.</p>
             <div className="done-actions">
-              <button className="btn blue" type="button" onClick={onClose}>Done</button>
+              <button className="btn blue" type="button" onClick={reset}>Give again</button>
               <ConfettiButton className="btn line">More confetti 🎉</ConfettiButton>
             </div>
           </section>
         )}
       </div>
-    </dialog>
+    </div>
   );
 }
 
