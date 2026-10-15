@@ -1,0 +1,8 @@
+node_modules
+.next
+out
+next-env.d.ts
+*.tsbuildinfo
+.env*.local
+# Submitted grant applications contain student personal data
+data/applications.json

@@ -1,0 +1,271 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { grantTypes, memberSchools, programs } from "@/lib/content";
+import {
+  ESSAY_MIN_WORDS, emptyApplication, grades, plansOptions, programYears, stepFields, validate, wordCount,
+  type ApplicationInput, type Errors,
+} from "@/lib/application";
+import { useSite } from "./Providers";
+
+const DRAFT_KEY = "lctc-grant-draft";
+const STEPS = ["About you", "Your request", "Your story", "Review"];
+
+export default function ApplyForm({ initialProgram }: { initialProgram?: string }) {
+  const [a, setA] = useState<ApplicationInput>(emptyApplication);
+  const [step, setStep] = useState(0);
+  const [errors, setErrors] = useState<Errors>({});
+  const [alert, setAlert] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [doneId, setDoneId] = useState("");
+  const [honey, setHoney] = useState("");
+  const loaded = useRef(false);
+  const top = useRef<HTMLDivElement>(null);
+  const { getConfetti } = useSite();
+
+  // Restore a saved draft, then keep saving as the student types.
+  useEffect(() => {
+    let draft: Partial<ApplicationInput> = {};
+    try { draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "{}"); } catch {}
+    setA(prev => ({ ...prev, ...draft, ...(initialProgram && programs.some(p => p.slug === initialProgram) ? { program: initialProgram } : {}) }));
+    loaded.current = true;
+  }, [initialProgram]);
+  useEffect(() => {
+    if (!loaded.current || doneId) return;
+    try { localStorage.setItem(DRAFT_KEY, JSON.stringify(a)); } catch {}
+  }, [a, doneId]);
+
+  const set = <K extends keyof ApplicationInput>(k: K, v: ApplicationInput[K]) => {
+    setA(p => ({ ...p, [k]: v }));
+    if (errors[k]) setErrors(e => ({ ...e, [k]: undefined }));
+  };
+
+  function goTo(n: number) {
+    setStep(n); setAlert("");
+    top.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function next() {
+    const e = validate(a, stepFields[step]);
+    setErrors(e);
+    const first = stepFields[step].find(k => e[k]);
+    if (first) { document.getElementById("f-" + first)?.focus(); return; }
+    goTo(step + 1);
+  }
+
+  async function submit() {
+    const e = validate(a);
+    setErrors(e);
+    const bad = stepFields.findIndex(fs => fs.some(k => e[k]));
+    if (bad >= 0) { if (bad !== step) goTo(bad); return; }
+    setBusy(true); setAlert("");
+    try {
+      const res = await fetch("/api/applications", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...a, website: honey }) });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        if (data.errors) setErrors(data.errors);
+        setAlert(data.error || "Something went wrong. Please try again.");
+        return;
+      }
+      setDoneId(data.id);
+      try { localStorage.removeItem(DRAFT_KEY); } catch {}
+      top.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      const fx = await getConfetti();
+      fx?.({ particleCount: 140, spread: 90, origin: { y: .4 }, colors: ["#015998", "#ff8a3d", "#5fa8e0", "#ffffff"] });
+    } catch {
+      setAlert("We couldn't reach the server. Check your connection and try again. Your answers are saved on this device.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function startOver() {
+    setA(emptyApplication); setDoneId(""); setStep(0); setErrors({});
+  }
+
+  const err = (k: keyof ApplicationInput) => <p className="err" id={"e-" + k}>{errors[k]}</p>;
+  const inv = (k: keyof ApplicationInput) => ({ id: "f-" + k, "aria-invalid": errors[k] ? true : undefined, "aria-describedby": "e-" + k });
+  const text = (k: keyof ApplicationInput, label: string, props: React.InputHTMLAttributes<HTMLInputElement> = {}, optional = false) => (
+    <div className="field">
+      <label htmlFor={"f-" + k}>{label} {optional && <span className="opt">(optional)</span>}</label>
+      <input type="text" value={a[k] as string} onChange={e => set(k, e.target.value)} {...inv(k)} {...props} />
+      {err(k)}
+    </div>
+  );
+  const select = (k: keyof ApplicationInput, label: string, options: { value: string; label: string }[]) => (
+    <div className="field">
+      <label htmlFor={"f-" + k}>{label}</label>
+      <select value={a[k] as string} onChange={e => set(k, e.target.value)} {...inv(k)}>
+        <option value="">Choose…</option>
+        {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+      </select>
+      {err(k)}
+    </div>
+  );
+  const opts = (xs: string[]) => xs.map(x => ({ value: x, label: x }));
+
+  const minor = a.grade !== "Adult learner";
+  const words = wordCount(a.essay);
+  const program = programs.find(p => p.slug === a.program);
+  const grant = grantTypes.find(g => g.id === a.grantType);
+
+  if (doneId) {
+    return (
+      <div className="form-card done-box" ref={top} aria-live="polite">
+        <svg className="check" viewBox="0 0 84 84" aria-hidden="true"><circle cx="42" cy="42" r="36" /><path d="m28 43 10 10 18-20" /></svg>
+        <p className="pill-ok">Application received</p>
+        <h2 className="form-title">Thank you, {a.firstName}!</h2>
+        <p className="form-sub" style={{ marginBottom: 0 }}>Your application for a <b>{grant?.name.toLowerCase()}</b> is in. Save your confirmation number:</p>
+        <p className="conf-id">{doneId}</p>
+        <p className="form-sub">The Foundation will review it and follow up at <b>{a.email}</b>. We may also reach out to {a.instructorName}{minor && a.guardianName ? ` and ${a.guardianName}` : ""}.</p>
+        <div className="done-actions">
+          <button className="btn blue" type="button" onClick={() => window.print()}>Print this page</button>
+          <button className="btn line" type="button" onClick={startOver}>Start another application</button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="form-card" ref={top} style={{ scrollMarginTop: 110 }}>
+      <ol className="stepper">
+        {STEPS.map((s, k) => <li key={s} className={k === step ? "on" : k < step ? "done" : ""} aria-current={k === step ? "step" : undefined}>{s}</li>)}
+      </ol>
+      {alert && <p className="form-alert" role="alert">{alert}</p>}
+
+      <form noValidate onSubmit={e => { e.preventDefault(); if (step < 3) next(); else submit(); }}>
+        <div className="hp" aria-hidden="true">
+          <label>Website<input tabIndex={-1} autoComplete="off" value={honey} onChange={e => setHoney(e.target.value)} /></label>
+        </div>
+
+        {step === 0 && (
+          <section>
+            <h2 className="form-title">About you</h2>
+            <p className="form-sub">Tell us who you are and where you train.</p>
+            <div className="row2">
+              {text("firstName", "First name", { autoComplete: "given-name" })}
+              {text("lastName", "Last name", { autoComplete: "family-name" })}
+            </div>
+            <div className="row2">
+              {text("email", "Email", { type: "email", autoComplete: "email" })}
+              {text("phone", "Phone", { type: "tel", autoComplete: "tel", inputMode: "tel" }, true)}
+            </div>
+            <div className="row2">
+              {select("grade", "Grade", opts(grades))}
+              {select("school", "Home high school", [...opts(memberSchools), { value: "Other", label: "Other" }])}
+            </div>
+            <div className="row2">
+              {select("program", "Tech Campus program", programs.map(p => ({ value: p.slug, label: p.name })))}
+              {select("programYear", "Year in program", opts(programYears))}
+            </div>
+          </section>
+        )}
+
+        {step === 1 && (
+          <section>
+            <h2 className="form-title">Your request</h2>
+            <p className="form-sub">Choose the kind of help you need. Not sure? Pick the closest one and explain below.</p>
+            <fieldset>
+              <legend>I&apos;m applying for</legend>
+              <div className="choice-grid" id="f-grantType" tabIndex={-1} aria-describedby="e-grantType">
+                {grantTypes.map(g => (
+                  <label className="choice" key={g.id}>
+                    <input type="radio" name="grantType" value={g.id} checked={a.grantType === g.id} onChange={() => set("grantType", g.id)} />
+                    <i aria-hidden="true">{g.icon}</i>
+                    <div><b>{g.name}</b><span>{g.text}</span></div>
+                  </label>
+                ))}
+              </div>
+              {err("grantType")}
+            </fieldset>
+            <div className="row2">
+              {text("amount", "Amount needed", { inputMode: "decimal", placeholder: "$" }, true)}
+              {select("plans", "Plans after Tech Campus", opts(plansOptions))}
+            </div>
+            <div className="field">
+              <label htmlFor="f-purpose">What would this pay for?</label>
+              <textarea rows={3} value={a.purpose} onChange={e => set("purpose", e.target.value)} placeholder="For example: my CNA state exam fee and scrubs for clinicals." {...inv("purpose")} />
+              {err("purpose")}
+            </div>
+            <fieldset>
+              <legend>Do you qualify for free or reduced-price lunch? <span className="opt" style={{ textTransform: "none", letterSpacing: 0, fontWeight: 500 }}>(optional, helps us prioritize need)</span></legend>
+              <div className="seg" style={{ gridTemplateColumns: "repeat(3, 1fr)", maxWidth: 420 }}>
+                {["Yes", "No", "Prefer not to say"].map(v => (
+                  <button key={v} type="button" aria-pressed={a.freeLunch === v} onClick={() => set("freeLunch", a.freeLunch === v ? "" : v)}>{v}</button>
+                ))}
+              </div>
+            </fieldset>
+          </section>
+        )}
+
+        {step === 2 && (
+          <section>
+            <h2 className="form-title">Your story</h2>
+            <p className="form-sub">Help the committee get to know you, and tell us who can vouch for your work.</p>
+            <div className="field">
+              <label htmlFor="f-essay">Why did you choose your program, and what will this support help you do next?</label>
+              <textarea rows={8} value={a.essay} onChange={e => set("essay", e.target.value)} {...inv("essay")} />
+              <p className={"hint" + (words >= ESSAY_MIN_WORDS ? " ok" : "")}>{words} / {ESSAY_MIN_WORDS} words minimum{words >= ESSAY_MIN_WORDS ? " ✓" : ""}</p>
+              {err("essay")}
+            </div>
+            <div className="row2">
+              {text("instructorName", "Tech Campus instructor")}
+              {text("instructorEmail", "Instructor email", { type: "email" })}
+            </div>
+            {minor && (
+              <div className="row2">
+                {text("guardianName", "Parent or guardian name", { autoComplete: "off" })}
+                {text("guardianEmail", "Parent or guardian email", { type: "email", autoComplete: "off" })}
+              </div>
+            )}
+          </section>
+        )}
+
+        {step === 3 && (
+          <section>
+            <h2 className="form-title">Review &amp; submit</h2>
+            <p className="form-sub">Check everything over. You can edit any section.</p>
+            <Review title="About you" onEdit={() => goTo(0)} rows={[
+              ["Name", `${a.firstName} ${a.lastName}`], ["Email", a.email], ["Phone", a.phone || "—"],
+              ["Grade", a.grade], ["High school", a.school], ["Program", `${program?.name ?? ""} · ${a.programYear}`],
+            ]} />
+            <Review title="Your request" onEdit={() => goTo(1)} rows={[
+              ["Applying for", grant?.name ?? ""], ["Amount", a.amount ? "$" + a.amount.replace(/^\$/, "") : "Not specified"],
+              ["Pays for", a.purpose], ["Plans", a.plans], ["Free/reduced lunch", a.freeLunch || "—"],
+            ]} />
+            <Review title="Your story" onEdit={() => goTo(2)} rows={[
+              ["Essay", `${words} words`], ["Instructor", `${a.instructorName} (${a.instructorEmail})`],
+              ...(minor ? [["Parent/guardian", `${a.guardianName} (${a.guardianEmail})`] as [string, string]] : []),
+            ]} />
+            <label className="check-row">
+              <input type="checkbox" checked={a.certify} onChange={e => set("certify", e.target.checked)} {...inv("certify")} />
+              <span>I certify that the information in this application is true and complete.</span>
+            </label>
+            {err("certify")}
+            <label className="check-row">
+              <input type="checkbox" checked={a.consent} onChange={e => set("consent", e.target.checked)} {...inv("consent")} />
+              <span>The Foundation may contact my instructor{minor ? " and parent/guardian" : ""} and confirm my enrollment with Tech Campus.</span>
+            </label>
+            {err("consent")}
+          </section>
+        )}
+
+        <div className="form-nav">
+          {step > 0 ? <button className="btn line" type="button" onClick={() => goTo(step - 1)}>← Back</button> : <span className="hint" style={{ alignSelf: "center" }}>Your progress saves on this device.</span>}
+          <button className="btn blue" type="submit" disabled={busy}>
+            {busy ? <><span className="spinner" aria-hidden="true" /> Submitting…</> : step < 3 ? "Continue →" : "Submit application"}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+function Review({ title, rows, onEdit }: { title: string; rows: [string, string][]; onEdit: () => void }) {
+  return (
+    <div className="review">
+      <h3>{title}<button type="button" onClick={onEdit}>Edit</button></h3>
+      <dl>{rows.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
+    </div>
+  );
+}

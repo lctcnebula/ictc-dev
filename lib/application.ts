@@ -1,0 +1,100 @@
+import { grantTypes, memberSchools, programs } from "./content";
+
+// Shared by the apply form (client) and the API route (server), so both enforce the same rules.
+
+export type ApplicationInput = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  grade: string;
+  school: string;
+  program: string;
+  programYear: string;
+  grantType: string;
+  amount: string;
+  purpose: string;
+  plans: string;
+  freeLunch: string;
+  essay: string;
+  instructorName: string;
+  instructorEmail: string;
+  guardianName: string;
+  guardianEmail: string;
+  certify: boolean;
+  consent: boolean;
+};
+
+export type ApplicationStatus = "new" | "reviewing" | "approved" | "declined";
+
+export type Application = ApplicationInput & {
+  id: string;
+  submittedAt: string;
+  status: ApplicationStatus;
+};
+
+export const emptyApplication: ApplicationInput = {
+  firstName: "", lastName: "", email: "", phone: "", grade: "", school: "", program: "", programYear: "",
+  grantType: "", amount: "", purpose: "", plans: "", freeLunch: "",
+  essay: "", instructorName: "", instructorEmail: "", guardianName: "", guardianEmail: "",
+  certify: false, consent: false,
+};
+
+export const grades = ["Junior (11th)", "Senior (12th)", "Adult learner"];
+export const programYears = ["First year", "Second year"];
+export const plansOptions = ["Two-year college", "Four-year college", "Apprenticeship", "Straight into the workforce", "Military", "Not sure yet"];
+export const ESSAY_MIN_WORDS = 75;
+
+const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+export const wordCount = (s: string) => (s.trim().match(/\S+/g) || []).length;
+
+export type Errors = Partial<Record<keyof ApplicationInput, string>>;
+
+export const stepFields: (keyof ApplicationInput)[][] = [
+  ["firstName", "lastName", "email", "phone", "grade", "school", "program", "programYear"],
+  ["grantType", "amount", "purpose", "plans"],
+  ["essay", "instructorName", "instructorEmail", "guardianName", "guardianEmail"],
+  ["certify", "consent"],
+];
+
+export function validate(a: ApplicationInput, fields?: (keyof ApplicationInput)[]): Errors {
+  const e: Errors = {};
+  const s = (v: unknown) => (typeof v === "string" ? v.trim() : "");
+  if (s(a.firstName).length < 1) e.firstName = "Enter your first name.";
+  if (s(a.lastName).length < 1) e.lastName = "Enter your last name.";
+  if (!emailRe.test(s(a.email))) e.email = "Enter a valid email address.";
+  if (s(a.phone) && s(a.phone).replace(/\D/g, "").length < 10) e.phone = "Enter a 10-digit phone number.";
+  if (!grades.includes(a.grade)) e.grade = "Choose your grade.";
+  if (!memberSchools.includes(a.school) && a.school !== "Other") e.school = "Choose your home high school.";
+  if (!programs.some(p => p.slug === a.program)) e.program = "Choose your Tech Campus program.";
+  if (!programYears.includes(a.programYear)) e.programYear = "Choose your year in the program.";
+  if (!grantTypes.some(g => g.id === a.grantType)) e.grantType = "Choose what you're applying for.";
+  if (s(a.amount)) {
+    const n = Number(s(a.amount).replace(/[$,]/g, ""));
+    if (!(n > 0)) e.amount = "Enter a dollar amount, or leave it blank.";
+  }
+  if (s(a.purpose).length < 15) e.purpose = "Tell us briefly what this would pay for.";
+  if (!plansOptions.includes(a.plans)) e.plans = "Choose your plans after Tech Campus.";
+  if (wordCount(s(a.essay)) < ESSAY_MIN_WORDS) e.essay = `Write at least ${ESSAY_MIN_WORDS} words.`;
+  if (s(a.instructorName).length < 2) e.instructorName = "Name a Tech Campus instructor who knows your work.";
+  if (!emailRe.test(s(a.instructorEmail))) e.instructorEmail = "Enter your instructor's email.";
+  if (a.grade !== "Adult learner") {
+    if (s(a.guardianName).length < 2) e.guardianName = "Enter a parent or guardian's name.";
+    if (!emailRe.test(s(a.guardianEmail))) e.guardianEmail = "Enter a parent or guardian's email.";
+  }
+  if (a.certify !== true) e.certify = "Please confirm your information is accurate.";
+  if (a.consent !== true) e.consent = "Please agree so we can contact your references.";
+  if (!fields) return e;
+  return Object.fromEntries(Object.entries(e).filter(([k]) => fields.includes(k as keyof ApplicationInput)));
+}
+
+// Keep only known fields with sane lengths, so stored records stay clean.
+export function sanitize(raw: Record<string, unknown>): ApplicationInput {
+  const out = { ...emptyApplication };
+  for (const k of Object.keys(emptyApplication) as (keyof ApplicationInput)[]) {
+    const v = raw[k];
+    if (k === "certify" || k === "consent") (out[k] as boolean) = v === true;
+    else (out[k] as string) = typeof v === "string" ? v.trim().slice(0, k === "essay" ? 8000 : 1000) : "";
+  }
+  return out;
+}
