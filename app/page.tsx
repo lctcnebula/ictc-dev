@@ -2,20 +2,14 @@ import Link from "next/link";
 import Hero from "@/components/Hero";
 import Stats from "@/components/Stats";
 import ProgramExplorer from "@/components/ProgramExplorer";
-import EventCard, { eventParts } from "@/components/EventCard";
+import UpcomingEvents from "@/components/UpcomingEvents";
 import { ConfettiButton, CopyButton, DonateButton, ShareButton } from "@/components/Actions";
-import { grantTypes, memberSchools, programs, site, upcomingEvents } from "@/lib/content";
-
-// Re-render hourly so past events drop off without a redeploy.
-export const revalidate = 3600;
+import { grantTypes, memberSchools, programs, site } from "@/lib/content";
 
 export default function Home() {
-  const events = upcomingEvents();
-  const next = events[0];
-
   return (
     <>
-      <Hero nextEvent={next && { title: next.title, when: `${eventParts(next.date).long} · ${next.time}` }} />
+      <Hero />
       <Stats />
 
       <div className="wrap ticker" aria-label="Member high schools">
@@ -156,11 +150,7 @@ export default function Home() {
             </div>
             <a className="text-link" href={site.calendarUrl} target="_blank" rel="noopener">Full campus calendar →</a>
           </div>
-          {events.length ? (
-            <div className="grid three">{events.map(e => <EventCard key={e.date + e.title} e={e} />)}</div>
-          ) : (
-            <p className="empty">No upcoming events right now. Check the <a href={site.calendarUrl} target="_blank" rel="noopener">campus calendar</a>.</p>
-          )}
+          <UpcomingEvents />
         </div>
       </section>
 

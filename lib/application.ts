@@ -1,6 +1,6 @@
 import { grantTypes, memberSchools, programs } from "./content";
 
-// Shared by the apply form (client) and the API route (server), so both enforce the same rules.
+// Validation and formatting for the student grant application. Runs entirely in the browser.
 
 export type ApplicationInput = {
   firstName: string;
@@ -25,13 +25,7 @@ export type ApplicationInput = {
   consent: boolean;
 };
 
-export type ApplicationStatus = "new" | "reviewing" | "approved" | "declined";
-
-export type Application = ApplicationInput & {
-  id: string;
-  submittedAt: string;
-  status: ApplicationStatus;
-};
+export type Application = ApplicationInput & { id: string; submittedAt: string };
 
 export const emptyApplication: ApplicationInput = {
   firstName: "", lastName: "", email: "", phone: "", grade: "", school: "", program: "", programYear: "",
@@ -88,13 +82,26 @@ export function validate(a: ApplicationInput, fields?: (keyof ApplicationInput)[
   return Object.fromEntries(Object.entries(e).filter(([k]) => fields.includes(k as keyof ApplicationInput)));
 }
 
-// Keep only known fields with sane lengths, so stored records stay clean.
-export function sanitize(raw: Record<string, unknown>): ApplicationInput {
-  const out = { ...emptyApplication };
-  for (const k of Object.keys(emptyApplication) as (keyof ApplicationInput)[]) {
-    const v = raw[k];
-    if (k === "certify" || k === "consent") (out[k] as boolean) = v === true;
-    else (out[k] as string) = typeof v === "string" ? v.trim().slice(0, k === "essay" ? 8000 : 1000) : "";
-  }
-  return out;
+// Plain-text version of a finished application, used for the email and the downloadable copy.
+export function toText(a: Application) {
+  const program = programs.find(p => p.slug === a.program)?.name ?? a.program;
+  const grant = grantTypes.find(g => g.id === a.grantType)?.name ?? a.grantType;
+  const lines: [string, string][] = [
+    ["Confirmation", a.id],
+    ["Submitted", new Date(a.submittedAt).toLocaleString("en-US")],
+    ["Name", `${a.firstName} ${a.lastName}`],
+    ["Email", a.email],
+    ["Phone", a.phone || "-"],
+    ["Grade", a.grade],
+    ["High school", a.school],
+    ["Program", `${program} (${a.programYear})`],
+    ["Applying for", grant],
+    ["Amount", a.amount ? "$" + a.amount.replace(/^\$/, "") : "Not specified"],
+    ["Pays for", a.purpose],
+    ["Plans", a.plans],
+    ["Free/reduced lunch", a.freeLunch || "-"],
+    ["Instructor", `${a.instructorName} <${a.instructorEmail}>`],
+  ];
+  if (a.guardianName) lines.push(["Parent/guardian", `${a.guardianName} <${a.guardianEmail}>`]);
+  return "LCTC FOUNDATION GRANT APPLICATION\n\n" + lines.map(([k, v]) => `${k}: ${v}`).join("\n") + "\n\nESSAY\n" + a.essay.trim() + "\n";
 }

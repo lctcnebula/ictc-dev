@@ -8,10 +8,7 @@ export const metadata: Metadata = {
   description: "Lake County Tech Campus students can apply for Foundation scholarships, tools and equipment grants, certification fee grants and emergency help.",
 };
 
-type Props = { searchParams: Promise<{ program?: string }> };
-
-export default async function ApplyPage({ searchParams }: Props) {
-  const { program } = await searchParams;
+export default function ApplyPage() {
   return (
     <>
       <section className="page-hero">
@@ -25,7 +22,7 @@ export default async function ApplyPage({ searchParams }: Props) {
 
       <section className="block tint" style={{ paddingTop: "clamp(48px, 6vw, 72px)" }}>
         <div className="wrap apply-layout">
-          <ApplyForm initialProgram={program} />
+          <ApplyForm />
           <div className="aside">
             <div className="aside-box">
               <h3>Who can apply</h3>
@@ -39,7 +36,7 @@ export default async function ApplyPage({ searchParams }: Props) {
               <h3>How it works</h3>
               <ol>
                 <li>Fill in the four short steps (about 10 minutes).</li>
-                <li>Save the confirmation number you get at the end.</li>
+                <li>Press &quot;Email my application&quot; to send it to the Foundation, or download or print a copy.</li>
                 <li>The Foundation reviews your application and may contact your instructor.</li>
                 <li>We email you with a decision.</li>
               </ol>

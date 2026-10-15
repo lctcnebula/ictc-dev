@@ -4,11 +4,15 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { slides } from "@/lib/content";
 import { DonateButton } from "./Actions";
+import { eventParts } from "./EventCard";
+import { useUpcomingEvents } from "./UpcomingEvents";
 
 const DUR = 6000;
 const pad = (n: number) => String(n).padStart(2, "0");
 
-export default function Hero({ nextEvent }: { nextEvent?: { title: string; when: string } }) {
+export default function Hero() {
+  const next = useUpcomingEvents()[0];
+  const nextEvent = next && { title: next.title, when: `${eventParts(next.date).long} · ${next.time}` };
   const [i, setI] = useState(0);
   const [paused, setPaused] = useState(false);
   const [cycle, setCycle] = useState(0); // bumps to restart the dot progress animation

@@ -1,39 +1,38 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { grantTypes, memberSchools, programs } from "@/lib/content";
+import { grantTypes, memberSchools, programs, site } from "@/lib/content";
 import {
-  ESSAY_MIN_WORDS, emptyApplication, grades, plansOptions, programYears, stepFields, validate, wordCount,
-  type ApplicationInput, type Errors,
+  ESSAY_MIN_WORDS, emptyApplication, grades, plansOptions, programYears, stepFields, toText, validate, wordCount,
+  type Application, type ApplicationInput, type Errors,
 } from "@/lib/application";
 import { useSite } from "./Providers";
 
 const DRAFT_KEY = "lctc-grant-draft";
+const SUBMITTED_KEY = "lctc-grant-submitted";
 const STEPS = ["About you", "Your request", "Your story", "Review"];
 
-export default function ApplyForm({ initialProgram }: { initialProgram?: string }) {
+export default function ApplyForm() {
   const [a, setA] = useState<ApplicationInput>(emptyApplication);
   const [step, setStep] = useState(0);
   const [errors, setErrors] = useState<Errors>({});
-  const [alert, setAlert] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [doneId, setDoneId] = useState("");
-  const [honey, setHoney] = useState("");
+    const [done, setDone] = useState<Application | null>(null);
   const loaded = useRef(false);
   const top = useRef<HTMLDivElement>(null);
   const { getConfetti } = useSite();
 
-  // Restore a saved draft, then keep saving as the student types.
+  // Restore a saved draft (and ?program= from a program page), then keep saving as the student types.
   useEffect(() => {
     let draft: Partial<ApplicationInput> = {};
     try { draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "{}"); } catch {}
-    setA(prev => ({ ...prev, ...draft, ...(initialProgram && programs.some(p => p.slug === initialProgram) ? { program: initialProgram } : {}) }));
+    const program = new URLSearchParams(location.search).get("program");
+    setA(prev => ({ ...prev, ...draft, ...(program && programs.some(p => p.slug === program) ? { program } : {}) }));
     loaded.current = true;
-  }, [initialProgram]);
+  }, []);
   useEffect(() => {
-    if (!loaded.current || doneId) return;
+    if (!loaded.current || done) return;
     try { localStorage.setItem(DRAFT_KEY, JSON.stringify(a)); } catch {}
-  }, [a, doneId]);
+  }, [a, done]);
 
   const set = <K extends keyof ApplicationInput>(k: K, v: ApplicationInput[K]) => {
     setA(p => ({ ...p, [k]: v }));
@@ -41,7 +40,7 @@ export default function ApplyForm({ initialProgram }: { initialProgram?: string 
   };
 
   function goTo(n: number) {
-    setStep(n); setAlert("");
+    setStep(n);
     top.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
@@ -58,29 +57,26 @@ export default function ApplyForm({ initialProgram }: { initialProgram?: string 
     setErrors(e);
     const bad = stepFields.findIndex(fs => fs.some(k => e[k]));
     if (bad >= 0) { if (bad !== step) goTo(bad); return; }
-    setBusy(true); setAlert("");
+    const app: Application = { ...a, id: "LCTC-G-" + Math.random().toString(36).slice(2, 8).toUpperCase(), submittedAt: new Date().toISOString() };
     try {
-      const res = await fetch("/api/applications", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...a, website: honey }) });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        if (data.errors) setErrors(data.errors);
-        setAlert(data.error || "Something went wrong. Please try again.");
-        return;
-      }
-      setDoneId(data.id);
-      try { localStorage.removeItem(DRAFT_KEY); } catch {}
-      top.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-      const fx = await getConfetti();
-      fx?.({ particleCount: 140, spread: 90, origin: { y: .4 }, colors: ["#015998", "#ff8a3d", "#5fa8e0", "#ffffff"] });
-    } catch {
-      setAlert("We couldn't reach the server. Check your connection and try again. Your answers are saved on this device.");
-    } finally {
-      setBusy(false);
-    }
+      const list = JSON.parse(localStorage.getItem(SUBMITTED_KEY) || "[]");
+      localStorage.setItem(SUBMITTED_KEY, JSON.stringify([...list, app]));
+      localStorage.removeItem(DRAFT_KEY);
+    } catch {}
+    setDone(app);
+    top.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    const fx = await getConfetti();
+    fx?.({ particleCount: 140, spread: 90, origin: { y: .4 }, colors: ["#015998", "#ff8a3d", "#5fa8e0", "#ffffff"] });
+  }
+
+  function download(app: Application) {
+    const url = URL.createObjectURL(new Blob([toText(app)], { type: "text/plain" }));
+    Object.assign(document.createElement("a"), { href: url, download: `${app.id}.txt` }).click();
+    URL.revokeObjectURL(url);
   }
 
   function startOver() {
-    setA(emptyApplication); setDoneId(""); setStep(0); setErrors({});
+    setA(emptyApplication); setDone(null); setStep(0); setErrors({});
   }
 
   const err = (k: keyof ApplicationInput) => <p className="err" id={"e-" + k}>{errors[k]}</p>;
@@ -109,19 +105,22 @@ export default function ApplyForm({ initialProgram }: { initialProgram?: string 
   const program = programs.find(p => p.slug === a.program);
   const grant = grantTypes.find(g => g.id === a.grantType);
 
-  if (doneId) {
+  if (done) {
+    const mail = `mailto:${site.email}?subject=${encodeURIComponent(`Grant application ${done.id}: ${done.firstName} ${done.lastName}`)}&body=${encodeURIComponent(toText(done))}`;
     return (
       <div className="form-card done-box" ref={top} aria-live="polite">
         <svg className="check" viewBox="0 0 84 84" aria-hidden="true"><circle cx="42" cy="42" r="36" /><path d="m28 43 10 10 18-20" /></svg>
-        <p className="pill-ok">Application received</p>
-        <h2 className="form-title">Thank you, {a.firstName}!</h2>
-        <p className="form-sub" style={{ marginBottom: 0 }}>Your application for a <b>{grant?.name.toLowerCase()}</b> is in. Save your confirmation number:</p>
-        <p className="conf-id">{doneId}</p>
-        <p className="form-sub">The Foundation will review it and follow up at <b>{a.email}</b>. We may also reach out to {a.instructorName}{minor && a.guardianName ? ` and ${a.guardianName}` : ""}.</p>
+        <p className="pill-ok">Application ready</p>
+        <h2 className="form-title">One last step, {done.firstName}!</h2>
+        <p className="form-sub" style={{ marginBottom: 0 }}>Your application for a <b>{grant?.name.toLowerCase()}</b> is complete. Your confirmation number:</p>
+        <p className="conf-id">{done.id}</p>
+        <p className="form-sub">Send it to the Foundation at <b>{site.email}</b>. The button below opens your email with everything filled in. Just press send. If email doesn&apos;t open, download a copy and attach it, or print it and hand it to Student Services.</p>
         <div className="done-actions">
-          <button className="btn blue" type="button" onClick={() => window.print()}>Print this page</button>
-          <button className="btn line" type="button" onClick={startOver}>Start another application</button>
+          <a className="btn blue" href={mail}>Email my application</a>
+          <button className="btn line" type="button" onClick={() => download(done)}>Download a copy</button>
+          <button className="btn line" type="button" onClick={() => window.print()}>Print</button>
         </div>
+        <p style={{ marginTop: 18 }}><button className="back" type="button" onClick={startOver}>Start another application</button></p>
       </div>
     );
   }
@@ -131,12 +130,8 @@ export default function ApplyForm({ initialProgram }: { initialProgram?: string 
       <ol className="stepper">
         {STEPS.map((s, k) => <li key={s} className={k === step ? "on" : k < step ? "done" : ""} aria-current={k === step ? "step" : undefined}>{s}</li>)}
       </ol>
-      {alert && <p className="form-alert" role="alert">{alert}</p>}
 
       <form noValidate onSubmit={e => { e.preventDefault(); if (step < 3) next(); else submit(); }}>
-        <div className="hp" aria-hidden="true">
-          <label>Website<input tabIndex={-1} autoComplete="off" value={honey} onChange={e => setHoney(e.target.value)} /></label>
-        </div>
 
         {step === 0 && (
           <section>
@@ -252,9 +247,7 @@ export default function ApplyForm({ initialProgram }: { initialProgram?: string 
 
         <div className="form-nav">
           {step > 0 ? <button className="btn line" type="button" onClick={() => goTo(step - 1)}>← Back</button> : <span className="hint" style={{ alignSelf: "center" }}>Your progress saves on this device.</span>}
-          <button className="btn blue" type="submit" disabled={busy}>
-            {busy ? <><span className="spinner" aria-hidden="true" /> Submitting…</> : step < 3 ? "Continue →" : "Submit application"}
-          </button>
+          <button className="btn blue" type="submit">{step < 3 ? "Continue →" : "Finish application"}</button>
         </div>
       </form>
     </div>
